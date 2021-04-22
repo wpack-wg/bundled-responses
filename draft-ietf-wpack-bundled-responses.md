@@ -2,7 +2,7 @@
 coding: utf-8
 
 title: Web Bundles
-docname: draft-yasskin-wpack-bundled-exchanges-latest
+docname: draft-ietf-wpack-bundled-responses-latest
 category: std
 consensus: true
 
