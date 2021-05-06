@@ -527,7 +527,11 @@ processed.
 # Change Log
 {: removeInRFC="true"}
 
-draft-04
+draft-00
+
+* No changes from draft-yasskin-wpack-bundled-exchanges-04.
+
+draft-yasskin-wpack-bundled-exchanges-04
 
 * Rewrite to be more declarative and less algorithmic.
 * Make a bundle represent a set of HTTP Representations, with the
@@ -538,19 +542,19 @@ draft-04
 * Update Variants examples for the latest Variants draft.
 * Removed the distinction between "metadata" and non-metadata sections.
 
-draft-03
+draft-yasskin-wpack-bundled-exchanges-03
 
 * Make the manifest optional.
 * Update the reference to draft-yasskin-wpack-use-cases.
 * Retitle to "web bundles".
 
-draft-02
+draft-yasskin-wpack-bundled-exchanges-02
 
 * Fix the initial bytes of the format.
 * Allow empty responses to omit their content type.
 * Provisionally register application/webbundle.
 
-draft-01
+draft-yasskin-wpack-bundled-exchanges-01
 
 * Include only section lengths in the section index, requiring sections to be
   listed in order.
