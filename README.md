@@ -2,9 +2,9 @@
 
 This is the working area for the IETF [WPACK Working Group](https://datatracker.ietf.org/wg/wpack/documents/) Internet-Draft, "Web Bundles".
 
-* [Editor's Copy](https://jyasskin.github.io/wpack-bundled-responses/#go.draft-ietf-wpack-bundled-responses.html)
+* [Editor's Copy](https://wpack-wg.github.io/bundled-responses/#go.draft-ietf-wpack-bundled-responses.html)
 * [Working Group Draft](https://datatracker.ietf.org/doc/html/draft-ietf-wpack-bundled-responses)
-* [Compare Editor's Copy to Working Group Draft](https://jyasskin.github.io/wpack-bundled-responses/#go.draft-ietf-wpack-bundled-responses.diff)
+* [Compare Editor's Copy to Working Group Draft](https://wpack-wg.github.io/bundled-responses/#go.draft-ietf-wpack-bundled-responses.diff)
 
 ## Building the Draft
 
@@ -21,4 +21,4 @@ This requires that you have the necessary software installed.  See
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/jyasskin/wpack-bundled-responses/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/wpack-wg/bundled-responses/blob/main/CONTRIBUTING.md).
