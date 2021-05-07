@@ -66,9 +66,9 @@ Standard ({{INFRA}}).
 
 # Semantics {#semantics}
 
-A bundle is logically a set of HTTP representations (Section 7 of
+A bundle is logically a set of HTTP representations (Section 3.2 of
 {{!I-D.ietf-httpbis-semantics}}), themselves represented by HTTP response
-messages (Section 2.1 of {{!I-D.ietf-httpbis-semantics}}). The bundle can
+messages (Section 3.4 of {{!I-D.ietf-httpbis-semantics}}). The bundle can
 include an optional URL identifying the primary resource within the bundle and
 can include other optional metadata. Particular applications can require that
 the primary URL and/or other metadata is present.
@@ -89,7 +89,7 @@ Bundle parsers support two primary operations:
 ## Naming a representation {#semantics-naming}
 
 Representations within a bundle are named by their `Content-Location` (Section
-7.8 of {{!I-D.ietf-httpbis-semantics}}), which holds a URL. This is also known
+8.7 of {{!I-D.ietf-httpbis-semantics}}), which holds a URL. This is also known
 as the representation's URL.
 
 Multiple representations within a bundle can have the same URL, in which case
@@ -361,7 +361,7 @@ Section 8.1.2 of {{!RFC7540}}. Response pseudo-headers (Section 8.1.2.4 of
 Each response's headers MUST include a `:status` pseudo-header with exactly 3 ASCII decimal digits and MUST NOT include any other pseudo-headers.
 
 If a response's payload is not empty, its headers MUST include a `Content-Type`
-header (Section 7.4 of {{!I-D.ietf-httpbis-semantics}}). The client MUST
+header (Section 8.3 of {{!I-D.ietf-httpbis-semantics}}). The client MUST
 interpret the following payload as this specified media type instead of trying
 to sniff a media type from the bytes of the payload, for example by appending an
 artificial `X-Content-Type-Options: nosniff` header field ({{FETCH}}) to
