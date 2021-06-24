@@ -513,6 +513,7 @@ Initial Assignments:
 
 | Section Name | Specification |
 | "index" | {{index-section}} |
+| "primary" | {{primary-section}} |
 | "manifest" | {{manifest-section}} |
 | "critical" | {{critical-section}} |
 | "responses" | {{responses-section}} |
