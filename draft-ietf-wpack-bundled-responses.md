@@ -529,6 +529,10 @@ processed.
 # Change Log
 {: removeInRFC="true"}
 
+draft-01
+
+* Turned the top-level primary URL into an optional section.
+
 draft-00
 
 * No changes from draft-yasskin-wpack-bundled-exchanges-04.
