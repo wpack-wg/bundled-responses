@@ -68,9 +68,7 @@ Standard ({{INFRA}}).
 A bundle is logically a set of HTTP representations (Section 3.2 of
 {{!I-D.ietf-httpbis-semantics}}), themselves represented by HTTP response
 messages (Section 3.4 of {{!I-D.ietf-httpbis-semantics}}). The bundle can
-include an optional URL identifying the primary resource within the bundle and
-can include other optional metadata. Particular applications can require that
-the primary URL and/or other metadata is present.
+include optional metadata, which may be required by particular applications.
 
 While the order of the representations is not semantically meaningful, it can
 significantly affect performance when the bundle is loaded from a network
@@ -219,7 +217,6 @@ jump directly to the section it needs. This specification defines the following
 sections:
 
 * `"index"` ({{index-section}})
-* `"primary"` ({{primary-section}})
 * `"manifest"` ({{manifest-section}})
 * `"critical"` ({{critical-section}})
 * `"responses"` ({{responses-section}})
@@ -293,15 +290,6 @@ entire index MUST fail to parse.
 A combination of available-values that is omitted from the bundle MUST be
 signaled by setting its offset and length to 0.
 
-### The primary section {#primary-section}
-
-~~~ cddl
-primary = whatwg-url
-~~~
-
-The "primary" section records a single URL identifying the primary URL of the
-bundle. The URL MUST refer to a resource with representations contained in the bundle itself.
-
 ### The manifest section {#manifest-section}
 
 ~~~ cddl
@@ -315,12 +303,6 @@ The bundle can contain multiple representations at this URL, and the client is
 expected to content-negotiate for the best one. For example, a client might
 select the one matching an `accept` header of `application/manifest+json`
 ({{appmanifest}}) and an `accept-language` header of `es-419`.
-
-Many bundles have a choice between identifying their manifest in this section or
-in their primary resource, especially if that resource is an HTML file.
-Identifying the manifest in this section can help recipients apply fields in the
-manifest sooner, for example to show a splash screen before parsing the primary
-resource.
 
 ### The critical section {#critical-section}
 
@@ -513,7 +495,6 @@ Initial Assignments:
 
 | Section Name | Specification |
 | "index" | {{index-section}} |
-| "primary" | {{primary-section}} |
 | "manifest" | {{manifest-section}} |
 | "critical" | {{critical-section}} |
 | "responses" | {{responses-section}} |
