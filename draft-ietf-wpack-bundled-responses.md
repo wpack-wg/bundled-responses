@@ -18,7 +18,6 @@ author:
     email: jyasskin@chromium.org
 
 normative:
-  appmanifest: W3C.WD-appmanifest-20180523
   CBORbis: RFC8949
   CDDL: RFC8610
   FETCH:
@@ -220,7 +219,6 @@ sections:
 
 * `"index"` ({{index-section}})
 * `"primary"` ({{primary-section}})
-* `"manifest"` ({{manifest-section}})
 * `"critical"` ({{critical-section}})
 * `"responses"` ({{responses-section}})
 
@@ -301,26 +299,6 @@ primary = whatwg-url
 
 The "primary" section records a single URL identifying the primary URL of the
 bundle. The URL MUST refer to a resource with representations contained in the bundle itself.
-
-### The manifest section {#manifest-section}
-
-~~~ cddl
-manifest = whatwg-url
-~~~
-
-The "manifest" section records a single URL identifying the manifest of the
-bundle. The URL MUST refer to a resource with representations contained in the bundle itself.
-
-The bundle can contain multiple representations at this URL, and the client is
-expected to content-negotiate for the best one. For example, a client might
-select the one matching an `accept` header of `application/manifest+json`
-({{appmanifest}}) and an `accept-language` header of `es-419`.
-
-Many bundles have a choice between identifying their manifest in this section or
-in their primary resource, especially if that resource is an HTML file.
-Identifying the manifest in this section can help recipients apply fields in the
-manifest sooner, for example to show a splash screen before parsing the primary
-resource.
 
 ### The critical section {#critical-section}
 
@@ -417,8 +395,8 @@ following strategies:
    submitting content or existing signatures reaching a certain age, rather than
    in response to untrusted-reader queries.
 1. Do all of:
-   1. If the bundle's contained URLs (e.g. in the manifest and index) are
-      derived from the request for the bundle,
+   1. If the bundle's contained URLs (e.g. in the index) are derived from the
+      request for the bundle,
       [percent-encode](https://url.spec.whatwg.org/#percent-encode) ({{URL}})
       any bytes that are greater than 0x7E or are not [URL code
       points](https://url.spec.whatwg.org/#url-code-points) ({{URL}}) in these
@@ -514,7 +492,6 @@ Initial Assignments:
 | Section Name | Specification |
 | "index" | {{index-section}} |
 | "primary" | {{primary-section}} |
-| "manifest" | {{manifest-section}} |
 | "critical" | {{critical-section}} |
 | "responses" | {{responses-section}} |
 
