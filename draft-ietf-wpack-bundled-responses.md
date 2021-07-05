@@ -14,7 +14,6 @@ pi: [comments, sortrefs, strict, symrefs, toc]
 author:
  -
     name: Jeffrey Yasskin
-    organization: Google
     email: jyasskin@chromium.org
 
 normative:
@@ -237,7 +236,6 @@ sections are optional.
 
 ~~~ cddl
 index = {* whatwg-url => [ location-in-responses ] }
-variants-value = bstr
 location-in-responses = (offset: uint, length: uint)
 ~~~
 
