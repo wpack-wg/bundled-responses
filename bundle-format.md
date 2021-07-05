@@ -14,6 +14,8 @@ Resource bundles are defined in [CDDL], a language for expressing grammars over 
 
 At the top level of their binary format, resource bundles are defined as a series of named sections, each with a length. The `section-lengths` field contains a table of contents, and the sections are found in the main `sections` field.
 
+The bundle MUST contain the `"index"` and `"responses"` sections. All other sections are optional.
+
 > To maintain compatibility across versions and environments, a resource bundle begins with [a magic number](#ref-magic-number), then a version number, and ends with its length.
 
 Even though this format starts out with just two sections, the section architecture ensures that the format is extensible. Over time, more sections can be defined and used in conjunction with resource bundles, without being a breaking change--a property which doesn't come for free in binary formats. Other binary formats such as [WebAssembly bytecode](https://webassembly.github.io/spec/core/binary/modules.html#sections) have made a similar design decision.
@@ -25,7 +27,7 @@ Even though this format starts out with just two sections, the section architect
 | `magic`           | literal                | 64 bits  | F0 9F 8C 90 F0 9F 93 A6                                                       |
 | `version`         | `bytes`: raw bytes     | 32 bits  | the version of the specification                                              |
 | `section-lengths` | array (section-length) | variable | [see below](#defn-section-length "section-length") _(section-length)_         |
-| `sections`        | array                  | variable | [see next section](#section-index "The index section")] _(The index section)_ |
+| `sections`        | array                  | variable | [see next section](#section-index "The index section") _(The index section)_ |
 | `length`          | `bytes`: raw bytes     | 64 bits  | The number of bytes in the bundle                                             |
 
 #### Type: <code id="defn-section-length">section-length</code>
@@ -92,9 +94,24 @@ location-in-responses = (offset: uint, length: uint)
 
 </details>
 
+### The `critical` section
+
+<span id="section-critical">The `critical` section</span> contains the names of sections of the bundle that the client needs to understand in order to load the bundle correctly. The rest of the sections are assumed to be optional.
+
+If the client has not implemented a section named by one of the items in this list, the client MUST fail to parse the bundle as a whole.
+
+<details>
+  <summary>CDDL Spec</summary>
+
+```cddl
+critical = [*tstr]
+```
+
+</details>
+
 ### The `responses` section
 
-The `responses` section contains an array of HTTP responses; each response contains response headers and the response body.
+<span id="section-responses">The `responses` section</span> contains an array of HTTP responses. Each response contains response headers and the response body.
 
 #### Type: `response`
 
