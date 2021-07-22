@@ -35,7 +35,7 @@ Even though this format starts out with just two sections, the section architect
 | name           | type                                                                        | size     | description                         |
 | -------------- | --------------------------------------------------------------------------- | -------- | ----------------------------------- |
 | `section-name` | <abbr title="Text String (CBOR Major Type 3)">[`tstr`][tstr]</abbr>: string | variable | The name of the section (see below) |
-| `length`       | `uint`: unsigned integer                                                    | variable | The length of the bundle in bytes   |
+| `length`       | `uint`: unsigned integer                                                    | variable | The length of the section in bytes  |
 
 <details>
   <summary>CDDL Spec</summary>
