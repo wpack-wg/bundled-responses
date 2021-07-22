@@ -56,6 +56,8 @@ section-lengths = [* (section-name: tstr, length: uint) ]
 
 ## Core sections: `index`, `critical` and `responses`
 
+The bundle MUST contain the `index` and `responses` sections. All other sections are optional.
+
 ### The `index` section
 
 <span id="section-index">The `index` section</span> is the table of contents for the entire bundle. It maps URLs to offset/length pairs in the responses section.
