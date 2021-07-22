@@ -56,8 +56,6 @@ section-lengths = [* (section-name: tstr, length: uint) ]
 
 ## Core sections: `index`, `critical` and `responses`
 
-The bundle MUST contain the `index` and `responses` sections. All other sections are optional.
-
 ### The `index` section
 
 <span id="section-index">The `index` section</span> is the table of contents for the entire bundle. It maps URLs to offset/length pairs in the responses section.
@@ -101,6 +99,8 @@ location-in-responses = (offset: uint, length: uint)
 <span id="section-critical">The `critical` section</span> contains the names of sections of the bundle that the client needs to understand in order to load the bundle correctly. The rest of the sections are assumed to be optional.
 
 If the client has not implemented a section named by one of the items in this list, the client MUST fail to parse the bundle as a whole.
+
+The `critical` section itself is optional.
 
 <details>
   <summary>CDDL Spec</summary>
