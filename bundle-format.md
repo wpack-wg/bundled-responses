@@ -16,7 +16,7 @@ At the top level of their binary format, resource bundles are defined as a serie
 
 The bundle MUST contain the `"index"` and `"responses"` sections. All other sections are optional.
 
-> To maintain compatibility across versions and environments, a resource bundle begins with [a magic number](#ref-magic-number), then a version number, and ends with its length.
+> To maintain compatibility across versions and environments, a resource bundle begins with [a magic number](#ref-magic-number), then a version number, and ends with its length. The version number is expected to not change, except as a last resort.
 
 Even though this format starts out with just two sections, the section architecture ensures that the format is extensible. Over time, more sections can be defined and used in conjunction with resource bundles, without being a breaking change--a property which doesn't come for free in binary formats. Other binary formats such as [WebAssembly bytecode](https://webassembly.github.io/spec/core/binary/modules.html#sections) have made a similar design decision.
 
