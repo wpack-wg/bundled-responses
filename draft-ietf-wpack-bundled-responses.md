@@ -659,6 +659,11 @@ headers = {* bstr => bstr}
 # Change Log
 {: removeInRFC="true"}
 
+draft-02
+
+* Removed primary URL, manifest and content negotiation.
+* Added bundle format appendix.
+
 draft-01
 
 * Turned the top-level primary URL into an optional section.
