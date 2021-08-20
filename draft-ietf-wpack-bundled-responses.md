@@ -18,7 +18,6 @@ author:
     email: jyasskin@chromium.org
 
 normative:
-  appmanifest: W3C.WD-appmanifest-20180523
   CBORbis: RFC8949
   CDDL: RFC8610
   HTTP: RFC2616
@@ -218,7 +217,6 @@ jump directly to the section it needs. This specification defines the following
 sections:
 
 * `"index"` ({{index-section}})
-* `"manifest"` ({{manifest-section}})
 * `"critical"` ({{critical-section}})
 * `"responses"` ({{responses-section}})
 
@@ -290,20 +288,6 @@ entire index MUST fail to parse.
 
 A combination of available-values that is omitted from the bundle MUST be
 signaled by setting its offset and length to 0.
-
-### The manifest section {#manifest-section}
-
-~~~ cddl
-manifest = whatwg-url
-~~~
-
-The "manifest" section records a single URL identifying the manifest of the
-bundle. The URL MUST refer to a resource with representations contained in the bundle itself.
-
-The bundle can contain multiple representations at this URL, and the client is
-expected to content-negotiate for the best one. For example, a client might
-select the one matching an `accept` header of `application/manifest+json`
-({{appmanifest}}) and an `accept-language` header of `es-419`.
 
 ### The critical section {#critical-section}
 
@@ -400,8 +384,8 @@ following strategies:
    submitting content or existing signatures reaching a certain age, rather than
    in response to untrusted-reader queries.
 1. Do all of:
-   1. If the bundle's contained URLs (e.g. in the manifest and index) are
-      derived from the request for the bundle,
+   1. If the bundle's contained URLs (e.g. in the index) are derived from the
+      request for the bundle,
       [percent-encode](https://url.spec.whatwg.org/#percent-encode) ({{URL}})
       any bytes that are greater than 0x7E or are not [URL code
       points](https://url.spec.whatwg.org/#url-code-points) ({{URL}}) in these
@@ -496,7 +480,6 @@ Initial Assignments:
 
 | Section Name | Specification |
 | "index" | {{index-section}} |
-| "manifest" | {{manifest-section}} |
 | "critical" | {{critical-section}} |
 | "responses" | {{responses-section}} |
 
@@ -576,7 +559,7 @@ The `index` section maps URLs ({{URL}}) to offset/length pairs in the [`response
 
 | name    | type                                          | size     | description                    |
 | ------- ----------------------------------------------- | -------- | ------------------------------ |
-| `index` | map ([`whatwg-url`](#type-whatg-url) => [`location-in-responses`](#type-location-in-responses)) | variable | A map from a URL to a location |
+| `index` | map ([`whatwg-url`](#type-whatwg-url) => [`location-in-responses`](#type-location-in-responses)) | variable | A map from a URL to a location |
 
 #### Type: `whatwg-url`
 
