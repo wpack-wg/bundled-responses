@@ -20,6 +20,7 @@ author:
 normative:
   CBORbis: RFC8949
   CDDL: RFC8610
+  HTTP: RFC2616
   FETCH:
     target: https://fetch.spec.whatwg.org/
     title: Fetch
@@ -67,9 +68,7 @@ Standard ({{INFRA}}).
 A bundle is logically a set of HTTP representations (Section 3.2 of
 {{!I-D.ietf-httpbis-semantics}}), themselves represented by HTTP response
 messages (Section 3.4 of {{!I-D.ietf-httpbis-semantics}}). The bundle can
-include an optional URL identifying the primary resource within the bundle and
-can include other optional metadata. Particular applications can require that
-the primary URL and/or other metadata is present.
+include optional metadata, which may be required by particular applications.
 
 While the order of the representations is not semantically meaningful, it can
 significantly affect performance when the bundle is loaded from a network
@@ -218,7 +217,6 @@ jump directly to the section it needs. This specification defines the following
 sections:
 
 * `"index"` ({{index-section}})
-* `"primary"` ({{primary-section}})
 * `"critical"` ({{critical-section}})
 * `"responses"` ({{responses-section}})
 
@@ -290,15 +288,6 @@ entire index MUST fail to parse.
 
 A combination of available-values that is omitted from the bundle MUST be
 signaled by setting its offset and length to 0.
-
-### The primary section {#primary-section}
-
-~~~ cddl
-primary = whatwg-url
-~~~
-
-The "primary" section records a single URL identifying the primary URL of the
-bundle. The URL MUST refer to a resource with representations contained in the bundle itself.
 
 ### The critical section {#critical-section}
 
@@ -491,7 +480,6 @@ Initial Assignments:
 
 | Section Name | Specification |
 | "index" | {{index-section}} |
-| "primary" | {{primary-section}} |
 | "critical" | {{critical-section}} |
 | "responses" | {{responses-section}} |
 
@@ -504,8 +492,141 @@ processed.
 
 --- back
 
+# Web bundle Format
+
+This appendix summarises the Web bundle format.
+
+Web bundles are defined in CDDL ({{CDDL}}), a language for expressing grammars over CBOR ({{CBORbis}}) binary data formats. Please refer to ({{CDDL}}) and ({{CBORbis}}) for the exact definition of the types used in this specification.
+
+To maintain compatibility across versions and environments, a Web bundle begins with a magic number (file signature) followed by a version number, and ends with the bundle's length. The version number is expected to not change, except as a last resort.
+
+At the top level of their binary format, Web bundles are defined as a series of named sections, each with a length. The `section-lengths` field contains a table of contents, and the sections are found in the main `sections` field.
+
+The bundle MUST contain the `"index"` and `"responses"` sections. All other sections are optional.
+
+Even though this format starts out with just three core sections, its architecture ensures that the format is extensible. Over time, more sections could be defined and used without causing a breaking change. Other binary formats such as [WebAssembly bytecode](https://webassembly.github.io/spec/core/binary/modules.html#sections) have made a similar design decision.
+
+## Bundle format
+
+### Type: `bundle`
+
+| name              | type    | size     | description                                       |
+| ----------------- | ------- | -------- | ------------------------------------------------- |
+| `magic`           | `bytes` | 64 bits  | `F0 9F 8C 90 F0 9F 93 A6` (hexadecimal)           |
+| `version`         | `bytes` | 32 bits  | the version of the specification                  |
+| `section-lengths` | array   | variable | array of [_section-length_](#type-section-length) |
+| `sections`        | array   | variable | see [_core sections_](#core-sections)             |
+| `length`          | `bytes` | 64 bits  | the length of the bundle in bytes                 |
+
+
+CDDL spec:
+  
+~~~~~ cddl
+webbundle = [
+  magic: h'F0 9F 8C 90 F0 9F 93 A6',
+  version: bytes .size 4,
+  section-lengths: bytes .cbor section-lengths,
+  sections: [* any ],
+  length: bytes .size 8, ; Big-endian number of bytes in the bundle.
+]
+~~~~~
+
+Note: the basic type `bytes` (alternatively named `bstr`), defined as Major type 2 in the {{CBORbis}} specification, represents a byte string.
+
+### Type: `section-length`
+
+| name           | type   | size     | description                         |
+| -------------- | ------ | -------- | ----------------------------------- |
+| `section-name` | `tstr` | variable | The name of the section             |
+| `length`       | `uint` | variable | The length of the section in bytes  |
+
+
+CDDL spec:
+  
+~~~~~ cddl
+section-lengths = [* (section-name: tstr, length: uint) ]
+~~~~~
+
+Note: the basic type `tstr`, defined as Major type 3 in the {{CBORbis}} specification, represents a text string encoded as UTF-8.
+
+## Core sections
+
+### The `index` section
+
+The `index` section maps URLs ({{URL}}) to offset/length pairs in the [`responses`](#the-responses-section) section.
+
+#### Type: `index`
+
+| name    | type                                          | size     | description                    |
+| ------- ----------------------------------------------- | -------- | ------------------------------ |
+| `index` | map ([`whatwg-url`](#type-whatg-url) => [`location-in-responses`](#type-location-in-responses)) | variable | A map from a URL to a location |
+
+#### Type: `whatwg-url`
+
+| name         | type   | size     | description                   |
+| ------------ | ------ | -------- | ----------------------------- |
+| `whatwg-url` | `tstr` | variable | A URL stored as a text string |
+
+#### Type: `location-in-responses`
+
+| name     | type   | size     | description                                                        |
+| -------- | ------ | -------- | ------------------------------------------------------------------ |
+| `offset` | `uint` | variable | An offset within the [`responses`](#the-responses-section) section |
+| `length` | `uint` | variable | The size of the response in bytes                                  |
+
+
+CDDL spec:
+
+~~~~~ cddl
+index = {* whatwg-url => [ location-in-responses ] }
+whatwg-url = tstr
+location-in-responses = (offset: uint, length: uint)
+~~~~~
+
+Note: the basic type `uint`, defined as Major type 0 in the {{CBORbis}} specification, represents an unsigned integer.
+
+
+### The `critical` section
+
+The `critical` section contains the names of additional sections of the bundle that the client needs to understand in order to load the bundle correctly. The rest of the sections are assumed to be optional. If the client has not implemented a section named by one of the items in this list, the client MUST fail to parse the bundle as a whole.
+
+The `critical` section itself is optional.
+
+
+CDDL spec:
+
+~~~~~ cddl
+critical = [*tstr]
+~~~~~
+
+
+### The `responses` section
+
+The `responses` section contains an array of HTTP responses ({{HTTP}}). Each response contains the response headers and the response body.
+
+#### Type: `response`
+
+| name      | type                   | size     | description                                       |
+| --------- | ---------------------- | -------- |-------------------------------------------------- |
+| `headers` | map (`bstr` => `bstr`) | variable | A map of field name to field value                |
+| `payload` | `bstr`                 | variable | The content of the HTTP response as a byte string |
+
+
+CDDL spec:
+
+~~~~~ cddl
+responses = [*response]
+response = [headers: bstr .cbor headers, payload: bstr]
+headers = {* bstr => bstr}
+~~~~~
+
 # Change Log
 {: removeInRFC="true"}
+
+draft-02
+
+* Removed primary URL, manifest and content negotiation.
+* Added bundle format appendix.
 
 draft-01
 
