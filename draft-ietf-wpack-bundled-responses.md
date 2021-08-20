@@ -14,6 +14,7 @@ pi: [comments, sortrefs, strict, symrefs, toc]
 author:
  -
     name: Jeffrey Yasskin
+    organization: Google
     email: jyasskin@chromium.org
 
 normative:
