@@ -559,7 +559,7 @@ The `index` section maps URLs ({{URL}}) to offset/length pairs in the [`response
 
 | name    | type                                          | size     | description                    |
 | ------- ----------------------------------------------- | -------- | ------------------------------ |
-| `index` | map ([`whatwg-url`](#type-whatg-url) => [`location-in-responses`](#type-location-in-responses)) | variable | A map from a URL to a location |
+| `index` | map (`whatwg-url` => [`location-in-responses`](#type-location-in-responses)) | variable | A map from a URL to a location |
 
 #### Type: `whatwg-url`
 
