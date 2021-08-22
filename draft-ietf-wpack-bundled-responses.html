@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Web Bundles</title>
+<meta content="Jeffrey Yasskin" name="author">
+<meta content="
+       Web bundles provide a way to bundle up groups of HTTP responses, with the
+request URLs that produced them, to transmit or store together. They can
+include multiple top-level resources, provide random access to their component
+exchanges, and efficiently store 8-bit resources. 
+    " name="description">
+<meta content="xml2rfc 3.9.1" name="generator">
+<meta content="draft-ietf-wpack-bundled-responses-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.9.1
+    Python 3.9.5
+    appdirs 1.4.4
+    ConfigArgParse 1.3
+    google-i18n-address 2.5.0
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 2.11.3
+    kitchen 1.2.6
+    lxml 4.6.3
+    pycountry 20.7.3
+    pyflakes 2.3.0
+    PyYAML 5.4.1
+    requests 2.25.1
+    setuptools 52.0.0
+    six 1.15.0
+-->
+<link href="draft-ietf-wpack-bundled-responses.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  scrollbar-color: #bbb #eee;
+}
+@media (prefers-color-scheme: dark) {
+html {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+#title, #rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+#rfcnum + #title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+dd.break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href].selfRef {
+  color: var(--text-color);
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">Web Bundles</td>
+<td class="right">August 2021</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Yasskin</td>
+<td class="center">Expires 21 February 2022</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-wpack-bundled-responses-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2021-08-20" class="published">20 August 2021</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2022-02-21">21 February 2022</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">J. Yasskin</div>
+<div class="org">Google</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Web Bundles</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">Web bundles provide a way to bundle up groups of HTTP responses, with the
+request URLs that produced them, to transmit or store together. They can
+include multiple top-level resources, provide random access to their component
+exchanges, and efficiently store 8-bit resources.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this document takes place on the
+  Web Packaging Working Group mailing list (wpack@ietf.org),
+  which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/wpack/">https://mailarchive.ietf.org/arch/browse/wpack/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+  <span><a href="https://github.com/wpack-wg/bundled-responses">https://github.com/wpack-wg/bundled-responses</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 21 February 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2021 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-terminology-and-conventions" class="xref">Terminology and Conventions</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-semantics" class="xref">Semantics</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-operations" class="xref">Operations</a></p>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-naming-a-representation" class="xref">Naming a representation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-expected-performance" class="xref">Expected performance</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-random-access" class="xref">Random access</a></p>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-streaming" class="xref">Streaming</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-format" class="xref">Format</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-top-level-structure" class="xref">Top-level structure</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.1.2.1">
+                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="xref">4.1.1</a>.  <a href="#name-trailing-length" class="xref">Trailing length</a></p>
+</li>
+                  <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.1.2.2">
+                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="xref">4.1.2</a>.  <a href="#name-draft-version-numbers" class="xref">Draft version numbers</a></p>
+</li>
+                </ul>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-bundle-sections" class="xref">Bundle sections</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.2.2.1">
+                    <p id="section-toc.1-1.4.2.2.2.1.1"><a href="#section-4.2.1" class="xref">4.2.1</a>.  <a href="#name-the-index-section" class="xref">The index section</a></p>
+</li>
+                  <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.2.2.2">
+                    <p id="section-toc.1-1.4.2.2.2.2.1"><a href="#section-4.2.2" class="xref">4.2.2</a>.  <a href="#name-the-critical-section" class="xref">The critical section</a></p>
+</li>
+                </ul>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-responses" class="xref">Responses</a></p>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-serving-constraints" class="xref">Serving constraints</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-version-skew" class="xref">Version skew</a></p>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-content-sniffing" class="xref">Content sniffing</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-iana-considerations" class="xref">IANA considerations</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-internet-media-type-registr" class="xref">Internet Media Type Registration</a></p>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="xref">6.2</a>.  <a href="#name-web-bundle-section-name-reg" class="xref">Web Bundle Section Name Registry</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-references" class="xref">References</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="xref">Appendix A</a>.  <a href="#name-web-bundle-format" class="xref">Web bundle Format</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#appendix-A.1" class="xref">A.1</a>.  <a href="#name-bundle-format" class="xref">Bundle format</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.1.2.1">
+                    <p id="section-toc.1-1.8.2.1.2.1.1"><a href="#appendix-A.1.1" class="xref">A.1.1</a>.  <a href="#name-type-bundle" class="xref">Type: <code>bundle</code></a></p>
+</li>
+                  <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.1.2.2">
+                    <p id="section-toc.1-1.8.2.1.2.2.1"><a href="#appendix-A.1.2" class="xref">A.1.2</a>.  <a href="#name-type-section-length" class="xref">Type: <code>section-length</code></a></p>
+</li>
+                </ul>
+</li>
+              <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#appendix-A.2" class="xref">A.2</a>.  <a href="#name-core-sections" class="xref">Core sections</a></p>
+<ul class="ulBare compact toc ulEmpty">
+<li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.2.2.1">
+                    <p id="section-toc.1-1.8.2.2.2.1.1"><a href="#appendix-A.2.1" class="xref">A.2.1</a>.  <a href="#name-the-index-section-2" class="xref">The <code>index</code> section</a></p>
+</li>
+                  <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.2.2.2">
+                    <p id="section-toc.1-1.8.2.2.2.2.1"><a href="#appendix-A.2.2" class="xref">A.2.2</a>.  <a href="#name-the-critical-section-2" class="xref">The <code>critical</code> section</a></p>
+</li>
+                  <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.8.2.2.2.3">
+                    <p id="section-toc.1-1.8.2.2.2.3.1"><a href="#appendix-A.2.3" class="xref">A.2.3</a>.  <a href="#name-the-responses-section" class="xref">The <code>responses</code> section</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="xref">Appendix B</a>.  <a href="#name-change-log" class="xref">Change Log</a></p>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-C" class="xref">Appendix C</a>.  <a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+</li>
+          <li class="ulBare compact toc ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-D" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">To satisfy the use cases in <span>[<a href="#I-D.yasskin-wpack-use-cases" class="xref">I-D.yasskin-wpack-use-cases</a>]</span>, this document
+proposes a new bundling format to group HTTP resources. The format is structured
+as an initial table of "sections" within the bundle followed by the content of
+those sections.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<div id="terminology">
+<section id="section-1.1">
+        <h3 id="name-terminology-and-conventions">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-terminology-and-conventions" class="section-name selfRef">Terminology and Conventions</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+"MAY", and "OPTIONAL" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">This specification uses the conventions and terminology defined in the Infra
+Standard (<span>[<a href="#INFRA" class="xref">INFRA</a>]</span>).<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="semantics">
+<section id="section-2">
+      <h2 id="name-semantics">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-semantics" class="section-name selfRef">Semantics</a>
+      </h2>
+<p id="section-2-1">A bundle is logically a set of HTTP representations (Section 3.2 of
+<span>[<a href="#I-D.ietf-httpbis-semantics" class="xref">I-D.ietf-httpbis-semantics</a>]</span>), themselves represented by HTTP response
+messages (Section 3.4 of <span>[<a href="#I-D.ietf-httpbis-semantics" class="xref">I-D.ietf-httpbis-semantics</a>]</span>). The bundle can
+include optional metadata, which may be required by particular applications.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">While the order of the representations is not semantically meaningful, it can
+significantly affect performance when the bundle is loaded from a network
+stream.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div id="semantics-operations">
+<section id="section-2.1">
+        <h3 id="name-operations">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-operations" class="section-name selfRef">Operations</a>
+        </h3>
+<p id="section-2.1-1">Bundle parsers support two primary operations:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.1-2">
+<li id="section-2.1-2.1">They can load the bundle's metadata given a prefix of the bundle.<a href="#section-2.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-2.1-2.2">They can find a representation within the bundle given that representation's
+URL (<a href="#semantics-naming" class="xref">Section 2.2</a>).<a href="#section-2.1-2.2" class="pilcrow">¶</a>
+</li>
+        </ol>
+</section>
+</div>
+<div id="semantics-naming">
+<section id="section-2.2">
+        <h3 id="name-naming-a-representation">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-naming-a-representation" class="section-name selfRef">Naming a representation</a>
+        </h3>
+<p id="section-2.2-1">Representations within a bundle are named by their <code>Content-Location</code> (Section
+8.7 of <span>[<a href="#I-D.ietf-httpbis-semantics" class="xref">I-D.ietf-httpbis-semantics</a>]</span>), which holds a URL. This is also known
+as the representation's URL.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">This identifying information for each representation is stored in an index
+(<a href="#index-section" class="xref">Section 4.2.1</a>) rather than in that representation's HTTP response message.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="performance">
+<section id="section-3">
+      <h2 id="name-expected-performance">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-expected-performance" class="section-name selfRef">Expected performance</a>
+      </h2>
+<p id="section-3-1">Bundles can be used in two different situations: they can be loaded from storage
+that provides O(1) access to any byte within the bundle, or they can be sent
+across a stream that provides bytes incrementally. An implementation MAY prefer
+either or both situations and SHOULD provide the following performance
+characteristics in its preferred situations:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="performance-random">
+<section id="section-3.1">
+        <h3 id="name-random-access">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-random-access" class="section-name selfRef">Random access</a>
+        </h3>
+<p id="section-3.1-1">To load a resource when seeing a bundle for the first time, the implementation
+reads O(size of the metadata and resource index) before starting to return bytes
+of the resource.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">TODO: Is big-O notation the right way to express expectations here?<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="performance-streaming">
+<section id="section-3.2">
+        <h3 id="name-streaming">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-streaming" class="section-name selfRef">Streaming</a>
+        </h3>
+<p id="section-3.2-1">When sending a bundle over a stream, the implementation will need to wait until
+it has the sizes of all contained resources before starting to send the resource
+index.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">When reading a bundle from a stream, the implementation starts returning bytes
+of a resource after receiving O(1) bytes of that resource, which comes after
+the O(# of resources) bytes of the index.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="format">
+<section id="section-4">
+      <h2 id="name-format">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-format" class="section-name selfRef">Format</a>
+      </h2>
+<div id="top-level">
+<section id="section-4.1">
+        <h3 id="name-top-level-structure">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-top-level-structure" class="section-name selfRef">Top-level structure</a>
+        </h3>
+<p id="section-4.1-1">A bundle is a CBOR array (<span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span>) with the following CDDL (<span>[<a href="#CDDL" class="xref">CDDL</a>]</span>)
+schema:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<div id="section-4.1-2">
+<pre class="sourcecode lang-cddl">
+webbundle = [
+  magic: h'F0 9F 8C 90 F0 9F 93 A6',
+  version: bytes .size 4,
+  section-lengths: bytes .cbor section-lengths,
+  sections: [* any ],
+  length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
+]
+
+whatwg-url = tstr
+</pre><a href="#section-4.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.1-3">When serialized, the bundle MUST satisfy the core deterministic encoding
+requirements from Section 4.2.1 of <span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span>. This format does not use
+floating point values or tags, so this specification does not add any
+deterministic encoding rules for them. If an item doesn't follow these
+requirements, or a byte-sequence being decoded as a CBOR item contains extra
+bytes, the parser MUST signal an error instead of any data it can extract from
+that item.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">High-level fields in the bundle format are designed to provide their
+length-in-bytes before the field starts so that a recipient trying to stream a
+bundle from the network can always wait for a known number of bytes instead of
+needing to implement a streaming CBOR parser.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">The <code>magic</code> number is <span class="unicode">"🌐📦" (U+1F310 U+1F4E6)</span> encoded in UTF-8. With the
+CBOR initial bytes for the array and bytestring, this makes the format
+identifiable by looking for <code>8? 48</code> (in base 16) followed by that UTF-8
+encoding. Parsers MUST only check the initial nibble of the initial <code>8?</code> byte in
+order to accommodate any future version's change in the number of array
+elements (up to 15).<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">The <code>version</code> bytestring MUST be <code>31 00 00 00</code> in base 16 (an ASCII "1" followed
+by 3 0s) for this version of bundles. If the recipient doesn't support the
+version in this field, it MUST ignore the bundle.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.1-7">The <code>section-lengths</code> and <code>sections</code> arrays contain the actual content of the
+bundle and are defined in <a href="#sections" class="xref">Section 4.2</a>. The <code>section-lengths</code> array is embedded
+in a byte string to facilitate reading it from a network. This byte string MUST
+be less than 8192 (8*1024) bytes long, and parsers MUST NOT load any data from a
+<code>section-lengths</code> item longer than this.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
+<p id="section-4.1-8">The bundle ends with an 8-byte integer holding the length of the whole bundle.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
+<div id="from-end">
+<section id="section-4.1.1">
+          <h4 id="name-trailing-length">
+<a href="#section-4.1.1" class="section-number selfRef">4.1.1. </a><a href="#name-trailing-length" class="section-name selfRef">Trailing length</a>
+          </h4>
+<p id="section-4.1.1-1">A bundle ends with an 8-byte CBOR byte string holding a big-endian integer
+that represents the byte-length of the whole bundle.<a href="#section-4.1.1-1" class="pilcrow">¶</a></p>
+<span id="name-example-trailing-bytes"></span><div id="example-trailing-bytes">
+<figure id="figure-1">
+            <div class="artwork art-text alignLeft art-ascii-art" id="section-4.1.1-2.1">
+<pre>
+ +------------+-----+----+----+----+----+----+----+----+----+----+
+ | first byte | ... | 48 | 00 | 00 | 00 | 00 | 00 | BC | 61 | 4E |
+ +------------+-----+----+----+----+----+----+----+----+----+----+
+             /       \
+       0xBC614E-10=12345668 omitted bytes
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-example-trailing-bytes" class="selfRef">Example trailing bytes</a>
+            </figcaption></figure>
+</div>
+<p id="section-4.1.1-3">Recipients loading the bundle in a random-access context SHOULD start by reading
+the last 8 bytes and seeking backwards by that many bytes to find the start of
+the bundle, instead of assuming that the start of the file is also the start of
+the bundle. This allows the bundle to be appended to another format such as a
+generic self-extracting executable.<a href="#section-4.1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="draft-version-numbers">
+<section id="section-4.1.2">
+          <h4 id="name-draft-version-numbers">
+<a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-draft-version-numbers" class="section-name selfRef">Draft version numbers</a>
+          </h4>
+<p id="section-4.1.2-1">This section is to be removed before publishing as an RFC.<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-2">Implementations of drafts of this specification MUST NOT use a <code>version</code> string
+of <code>31 00 00 00</code> (base 16). They MUST instead define an implementation-specific
+4-byte string starting with <code>62</code> (<code>b</code>) to identify which draft is implemented.<a href="#section-4.1.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sections">
+<section id="section-4.2">
+        <h3 id="name-bundle-sections">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-bundle-sections" class="section-name selfRef">Bundle sections</a>
+        </h3>
+<p id="section-4.2-1">A bundle's content is in a series of sections, which can be accessed randomly
+using the information in the <code>section-lengths</code> CBOR item:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<div id="section-4.2-2">
+<pre class="sourcecode lang-cddl">
+section-lengths = [* (section-name: tstr, length: uint) ],
+</pre><a href="#section-4.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-3">This field lists the named sections in the bundle in the order they appear, with
+each section name followed by the length in bytes of the corresponding CBOR item
+in the <code>sections</code> array. This allows a random-access parser (<a href="#performance" class="xref">Section 3</a>) to
+jump directly to the section it needs. This specification defines the following
+sections:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.2-4.1">
+            <code>"index"</code> (<a href="#index-section" class="xref">Section 4.2.1</a>)<a href="#section-4.2-4.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.2-4.2">
+            <code>"critical"</code> (<a href="#critical-section" class="xref">Section 4.2.2</a>)<a href="#section-4.2-4.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.2-4.3">
+            <code>"responses"</code> (<a href="#responses-section" class="xref">Section 4.3</a>)<a href="#section-4.2-4.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-4.2-5">Future specifications can register new section names as described in
+<a href="#bundle-section-name-registry" class="xref">Section 6.2</a>, in order to extend the format without
+incrementing its version number.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6">The <code>"responses"</code> section MUST appear after the other three sections defined
+here, and parsers MUST NOT load any data if that is not the case.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<p id="section-4.2-7">The <code>sections</code> array contains the sections' content. The length of this array
+MUST be exactly half the length of the <code>section-lengths</code> array, and parsers MUST
+NOT load any data if that is not the case.<a href="#section-4.2-7" class="pilcrow">¶</a></p>
+<p id="section-4.2-8">The bundle MUST contain the <code>"index"</code> and <code>"responses"</code> sections. All other
+sections are optional.<a href="#section-4.2-8" class="pilcrow">¶</a></p>
+<div id="index-section">
+<section id="section-4.2.1">
+          <h4 id="name-the-index-section">
+<a href="#section-4.2.1" class="section-number selfRef">4.2.1. </a><a href="#name-the-index-section" class="section-name selfRef">The index section</a>
+          </h4>
+<div id="section-4.2.1-1">
+<pre class="sourcecode lang-cddl">
+index = {* whatwg-url =&gt; [ location-in-responses ] }
+location-in-responses = (offset: uint, length: uint)
+</pre><a href="#section-4.2.1-1" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2.1-2">The <code>"index"</code> section defines the set of HTTP representations in the bundle and
+identifies their locations in the <code>"responses"</code> section. It consists of a CBOR
+map whose keys are the URLs of the representations in the bundle
+(<a href="#semantics-naming" class="xref">Section 2.2</a>). The value of an index entry is an offset/length pair.
+The offset is relative to the start of the <code>"responses"</code> section, with an offset
+of 0 referring to the head of the CBOR <code>responses</code> array itself. The length is
+the length in bytes of the <code>response</code> CBOR item holding this representation
+(<a href="#responses-section" class="xref">Section 4.3</a>).<a href="#section-4.2.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="critical-section">
+<section id="section-4.2.2">
+          <h4 id="name-the-critical-section">
+<a href="#section-4.2.2" class="section-number selfRef">4.2.2. </a><a href="#name-the-critical-section" class="section-name selfRef">The critical section</a>
+          </h4>
+<div id="section-4.2.2-1">
+<pre class="sourcecode lang-cddl">
+critical = [*tstr]
+</pre><a href="#section-4.2.2-1" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2.2-2">The "critical" section consists of the names of sections of the bundle that the
+client needs to understand in order to load the bundle correctly. Other sections
+are assumed to be optional.<a href="#section-4.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2.2-3">If the client has not implemented a section named by one of the items in this
+list, the client MUST fail to parse the bundle as a whole.<a href="#section-4.2.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="responses-section">
+<section id="section-4.3">
+        <h3 id="name-responses">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-responses" class="section-name selfRef">Responses</a>
+        </h3>
+<div id="section-4.3-1">
+<pre class="sourcecode lang-cddl">
+responses = [*response]
+response = [headers: bstr .cbor headers, payload: bstr]
+headers = {* bstr =&gt; bstr}
+</pre><a href="#section-4.3-1" class="pilcrow">¶</a>
+</div>
+<p id="section-4.3-2">The "responses" section holds the HTTP responses that represent the HTTP
+representations in the bundle. It consists of a CBOR array of responses, each of
+which is pointed to by one or more entries in the "index" section
+(<a href="#index-section" class="xref">Section 4.2.1</a>).<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">The length of the <code>headers</code> byte string in a response MUST be less than 524288
+(512*1024) bytes, and recipients MUST fail to load a response with longer
+headers.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4">When receiving a bundle in a stream, the recipient MAY process the headers
+before the payload has been received and MAY start processing the beginning of
+the payload before the end of the payload has been received.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">The keys of the headers map MUST consist of lowercase ASCII as described in
+Section 8.1.2 of <span>[<a href="#RFC7540" class="xref">RFC7540</a>]</span>. Response pseudo-headers (Section 8.1.2.4 of
+<span>[<a href="#RFC7540" class="xref">RFC7540</a>]</span> are included in this headers map.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">Each response's headers MUST include a <code>:status</code> pseudo-header with exactly 3 ASCII decimal digits and MUST NOT include any other pseudo-headers.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-7">If a response's payload is not empty, its headers MUST include a <code>Content-Type</code>
+header (Section 8.3 of <span>[<a href="#I-D.ietf-httpbis-semantics" class="xref">I-D.ietf-httpbis-semantics</a>]</span>). The client MUST
+interpret the following payload as this specified media type instead of trying
+to sniff a media type from the bytes of the payload, for example by appending an
+artificial <code>X-Content-Type-Options: nosniff</code> header field (<span>[<a href="#FETCH" class="xref">FETCH</a>]</span>) to
+downstream protocols.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="serving-constraints">
+<section id="section-4.4">
+        <h3 id="name-serving-constraints">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-serving-constraints" class="section-name selfRef">Serving constraints</a>
+        </h3>
+<p id="section-4.4-1">When served over HTTP, a response containing an <code>application/webbundle</code>
+payload MUST include at least the following response header fields, to reduce
+content sniffing vulnerabilities (<a href="#seccons-content-sniffing" class="xref">Section 5.2</a>):<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.4-2.1">Content-Type: application/webbundle<a href="#section-4.4-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-4.4-2.2">X-Content-Type-Options: nosniff<a href="#section-4.4-2.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="security">
+<section id="section-5">
+      <h2 id="name-security-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="seccons-version-skew">
+<section id="section-5.1">
+        <h3 id="name-version-skew">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-version-skew" class="section-name selfRef">Version skew</a>
+        </h3>
+<p id="section-5.1-1">Bundles currently have no mechanism for ensuring that any signed exchanges they
+contain constitute a consistent version of those resources. Even if a website
+never has a security vulnerability when resources are fetched at a single time,
+an attacker might be able to combine a set of resources pulled from different
+versions of the website to build a vulnerable site. While the vulnerable site
+could have occurred by chance on a client's machine due to normal HTTP caching,
+bundling allows an attacker to guarantee that it happens. Future work in this
+specification might allow a bundle to constrain its resources to come from a
+consistent version.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="seccons-content-sniffing">
+<section id="section-5.2">
+        <h3 id="name-content-sniffing">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-content-sniffing" class="section-name selfRef">Content sniffing</a>
+        </h3>
+<p id="section-5.2-1">While modern browsers tend to trust the <code>Content-Type</code> header sent with a
+resource, especially when accompanied by <code>X-Content-Type-Options: nosniff</code>,
+plugins will sometimes search for executable content buried inside a resource
+and execute it in the context of the origin that served the resource, leading to
+XSS vulnerabilities. For example, some PDF reader plugins look for <code>%PDF</code>
+anywhere in the first 1kB and execute the code that follows it.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">The <code>application/webbundle</code> format defined above includes URLs and request
+headers early in the format, which an attacker could use to cause these plugins
+to sniff a bad content type.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-3">To avoid vulnerabilities, in addition to the response header requirements in
+<a href="#serving-constraints" class="xref">Section 4.4</a>, servers are advised to only serve an
+<code>application/webbundle</code> resource from a domain if it would also be safe for that
+domain to serve the bundle's content directly, and to follow at least one of the
+following strategies:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.2-4">
+<li id="section-5.2-4.1">Only serve bundles from dedicated domains that don't have access to sensitive
+cookies or user storage.<a href="#section-5.2-4.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-5.2-4.2">Generate bundles "offline", that is, in response to a trusted author
+submitting content or existing signatures reaching a certain age, rather than
+in response to untrusted-reader queries.<a href="#section-5.2-4.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-5.2-4.3">
+            <p id="section-5.2-4.3.1">Do all of:<a href="#section-5.2-4.3.1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.2-4.3.2">
+<li id="section-5.2-4.3.2.1">If the bundle's contained URLs (e.g. in the index) are derived from the
+request for the bundle,
+<a href="https://url.spec.whatwg.org/#percent-encode">percent-encode</a> (<span>[<a href="#URL" class="xref">URL</a>]</span>)
+any bytes that are greater than 0x7E or are not <a href="https://url.spec.whatwg.org/#url-code-points">URL code
+points</a> (<span>[<a href="#URL" class="xref">URL</a>]</span>) in these
+URLs. It is particularly important to make sure no unescaped nulls (0x00)
+or angle brackets (0x3C and 0x3E) appear.<a href="#section-5.2-4.3.2.1" class="pilcrow">¶</a>
+</li>
+              <li id="section-5.2-4.3.2.2">Similarly, if the request headers for any contained resource are based on
+the headers sent while requesting the bundle, only include request header
+field names <strong>and values</strong> that appear in a static allowlist. Keep the set of
+allowed request header fields smaller than 24 elements to prevent
+attackers from controlling a whole CBOR length byte.<a href="#section-5.2-4.3.2.2" class="pilcrow">¶</a>
+</li>
+              <li id="section-5.2-4.3.2.3">Restrict the number of items a request can direct the server to include in
+a bundle to less than 12, again to prevent attackers from controlling a
+whole CBOR length byte.<a href="#section-5.2-4.3.2.3" class="pilcrow">¶</a>
+</li>
+              <li id="section-5.2-4.3.2.4">Do not reflect request header fields into the set of response headers.<a href="#section-5.2-4.3.2.4" class="pilcrow">¶</a>
+</li>
+            </ol>
+</li>
+        </ol>
+<p id="section-5.2-5">If the server serves responses that are written by a potential attacker but then
+escaped, the <code>application/webbundle</code> format allows the attacker to use the
+length of the response to control a few bytes before the start of the response.
+Any existing mechanisms that prevent polyglot documents probably keep working in
+the face of this new attack, but we don't have a guarantee of that.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6">To encourage servers to include the <code>X-Content-Type-Options: nosniff</code> header
+field, clients SHOULD reject bundles served without it.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-6">
+      <h2 id="name-iana-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA considerations</a>
+      </h2>
+<div id="internet-media-type-registration">
+<section id="section-6.1">
+        <h3 id="name-internet-media-type-registr">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-internet-media-type-registr" class="section-name selfRef">Internet Media Type Registration</a>
+        </h3>
+<p id="section-6.1-1">IANA is requested to register the MIME media type (<span>[<a href="#IANA.media-types" class="xref">IANA.media-types</a>]</span>) for
+web bundles, application/webbundle, as follows:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-2.1">Type name: application<a href="#section-6.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.2">Subtype name: webbundle<a href="#section-6.1-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.3">
+            <p id="section-6.1-2.3.1">Required parameters:<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-2.3.2.1">
+                <p id="section-6.1-2.3.2.1.1">v: A string denoting the version of the file format. (<span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span> ABNF:
+<code>version = 1*(DIGIT/%x61-7A)</code>) The version defined in this specification is <code>1</code>.<a href="#section-6.1-2.3.2.1.1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2.3.2.1.2">
+Note: RFC EDITOR PLEASE DELETE THIS NOTE; Implementations of drafts of this
+specification MUST NOT use simple integers to describe their versions, and
+MUST instead define implementation-specific strings to identify which draft
+is implemented.<a href="#section-6.1-2.3.2.1.2" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-6.1-2.4">Optional parameters: N/A<a href="#section-6.1-2.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.5">Encoding considerations: binary<a href="#section-6.1-2.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.6">Security considerations: See <a href="#security" class="xref">Section 5</a> of this document.<a href="#section-6.1-2.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.7">Interoperability considerations: N/A<a href="#section-6.1-2.7" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.8">Published specification: This document<a href="#section-6.1-2.8" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.9">Applications that use this media type: None yet, but it is expected that web
+   browsers will use this format.<a href="#section-6.1-2.9" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.10">Fragment identifier considerations: N/A<a href="#section-6.1-2.10" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.11">
+            <p id="section-6.1-2.11.1">Additional information:<a href="#section-6.1-2.11.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-2.11.2.1">Deprecated alias names for this type: N/A<a href="#section-6.1-2.11.2.1" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.1-2.11.2.2">Magic number(s): 86 48 F0 9F 8C 90 F0 9F 93 A6<a href="#section-6.1-2.11.2.2" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.1-2.11.2.3">File extension(s): .wbn<a href="#section-6.1-2.11.2.3" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-6.1-2.11.2.4">Macintosh file type code(s): N/A<a href="#section-6.1-2.11.2.4" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-6.1-2.12">Person &amp; email address to contact for further information:
+See the Author's Address section of this specification.<a href="#section-6.1-2.12" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.13">Intended usage: COMMON<a href="#section-6.1-2.13" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.14">Restrictions on usage: N/A<a href="#section-6.1-2.14" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.15">Author:
+See the Author's Address section of this specification.<a href="#section-6.1-2.15" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.16">Change controller:
+The IESG <a href="mailto:iesg@ietf.org">iesg@ietf.org</a><a href="#section-6.1-2.16" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-2.17">Provisional registration? Yes.<a href="#section-6.1-2.17" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="bundle-section-name-registry">
+<section id="section-6.2">
+        <h3 id="name-web-bundle-section-name-reg">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-web-bundle-section-name-reg" class="section-name selfRef">Web Bundle Section Name Registry</a>
+        </h3>
+<p id="section-6.2-1">IANA is directed to create a new registry with the following attributes:<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">Name: Web Bundle Section Names<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">Review Process: Specification Required<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">Initial Assignments:<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Section Name</th>
+              <th class="text-left" rowspan="1" colspan="1">Specification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">"index"</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <a href="#index-section" class="xref">Section 4.2.1</a>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">"critical"</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <a href="#critical-section" class="xref">Section 4.2.2</a>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">"responses"</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <a href="#responses-section" class="xref">Section 4.3</a>
+</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-6.2-6">Requirements on new assignments:<a href="#section-6.2-6" class="pilcrow">¶</a></p>
+<p id="section-6.2-7">Section Names MUST be encoded in UTF-8.<a href="#section-6.2-7" class="pilcrow">¶</a></p>
+<p id="section-6.2-8">A section's specification MAY say that, if it is present, another section is not
+processed.<a href="#section-6.2-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="CBORbis">[CBORbis]</dt>
+        <dd>
+<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8949">https://datatracker.ietf.org/doc/html/rfc8949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CDDL">[CDDL]</dt>
+        <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8610">https://datatracker.ietf.org/doc/html/rfc8610</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FETCH">[FETCH]</dt>
+        <dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch"</span>, <time datetime="2021-08" class="refDate">August 2021</time>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="HTTP">[HTTP]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R.</span>, <span class="refAuthor">Gettys, J.</span>, <span class="refAuthor">Mogul, J.</span>, <span class="refAuthor">Frystyk, H.</span>, <span class="refAuthor">Masinter, L.</span>, <span class="refAuthor">Leach, P.</span>, and <span class="refAuthor">T. Berners-Lee</span>, <span class="refTitle">"Hypertext Transfer Protocol -- HTTP/1.1"</span>, <span class="seriesInfo">RFC 2616</span>, <span class="seriesInfo">DOI 10.17487/RFC2616</span>, <time datetime="1999-06" class="refDate">June 1999</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc2616">https://datatracker.ietf.org/doc/html/rfc2616</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-httpbis-semantics">[I-D.ietf-httpbis-semantics]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R. T.</span>, <span class="refAuthor">Nottingham, M.</span>, and <span class="refAuthor">J. Reschke</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-semantics-18</span>, <time datetime="2021-08-18" class="refDate">18 August 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-semantics-18">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-semantics-18</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IANA.media-types">[IANA.media-types]</dt>
+        <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Media Types"</span>, <span>&lt;<a href="http://www.iana.org/assignments/media-types">http://www.iana.org/assignments/media-types</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="INFRA">[INFRA]</dt>
+        <dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Infra"</span>, <time datetime="2021-08" class="refDate">August 2021</time>, <span>&lt;<a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc5234">https://datatracker.ietf.org/doc/html/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7540">[RFC7540]</dt>
+        <dd>
+<span class="refAuthor">Belshe, M.</span>, <span class="refAuthor">Peon, R.</span>, and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 2 (HTTP/2)"</span>, <span class="seriesInfo">RFC 7540</span>, <span class="seriesInfo">DOI 10.17487/RFC7540</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc7540">https://datatracker.ietf.org/doc/html/rfc7540</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/rfc8174">https://datatracker.ietf.org/doc/html/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="URL">[URL]</dt>
+      <dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"URL"</span>, <time datetime="2021-08" class="refDate">August 2021</time>, <span>&lt;<a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-httpbis-variants">[I-D.ietf-httpbis-variants]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"HTTP Representation Variants"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-variants-06</span>, <time datetime="2019-11-03" class="refDate">3 November 2019</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-variants-06">https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-variants-06</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.yasskin-wpack-use-cases">[I-D.yasskin-wpack-use-cases]</dt>
+      <dd>
+<span class="refAuthor">Yasskin, J.</span>, <span class="refTitle">"Use Cases and Requirements for Web Packages"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-yasskin-wpack-use-cases-02</span>, <time datetime="2021-04-13" class="refDate">13 April 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-yasskin-wpack-use-cases-02">https://datatracker.ietf.org/doc/html/draft-yasskin-wpack-use-cases-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="web-bundle-format">
+<section id="appendix-A">
+      <h2 id="name-web-bundle-format">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-web-bundle-format" class="section-name selfRef">Web bundle Format</a>
+      </h2>
+<p id="appendix-A-1">This appendix summarises the Web bundle format.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">Web bundles are defined in CDDL (<span>[<a href="#CDDL" class="xref">CDDL</a>]</span>), a language for expressing grammars over CBOR (<span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span>) binary data formats. Please refer to (<span>[<a href="#CDDL" class="xref">CDDL</a>]</span>) and (<span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span>) for the exact definition of the types used in this specification.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+<p id="appendix-A-3">To maintain compatibility across versions and environments, a Web bundle begins with a magic number (file signature) followed by a version number, and ends with the bundle's length. The version number is expected to not change, except as a last resort.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<p id="appendix-A-4">At the top level of their binary format, Web bundles are defined as a series of named sections, each with a length. The <code>section-lengths</code> field contains a table of contents, and the sections are found in the main <code>sections</code> field.<a href="#appendix-A-4" class="pilcrow">¶</a></p>
+<p id="appendix-A-5">The bundle MUST contain the <code>"index"</code> and <code>"responses"</code> sections. All other sections are optional.<a href="#appendix-A-5" class="pilcrow">¶</a></p>
+<p id="appendix-A-6">Even though this format starts out with just three core sections, its architecture ensures that the format is extensible. Over time, more sections could be defined and used without causing a breaking change. Other binary formats such as <a href="https://webassembly.github.io/spec/core/binary/modules.html#sections">WebAssembly bytecode</a> have made a similar design decision.<a href="#appendix-A-6" class="pilcrow">¶</a></p>
+<div id="bundle-format">
+<section id="appendix-A.1">
+        <h3 id="name-bundle-format">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-bundle-format" class="section-name selfRef">Bundle format</a>
+        </h3>
+<div id="type-bundle">
+<section id="appendix-A.1.1">
+          <h4 id="name-type-bundle">
+<a href="#appendix-A.1.1" class="section-number selfRef">A.1.1. </a><a href="#name-type-bundle" class="section-name selfRef">Type: <code>bundle</code></a>
+          </h4>
+<table class="center" id="table-2">
+            <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+              <tr>
+                <th class="text-left" rowspan="1" colspan="1">name</th>
+                <th class="text-left" rowspan="1" colspan="1">type</th>
+                <th class="text-left" rowspan="1" colspan="1">size</th>
+                <th class="text-left" rowspan="1" colspan="1">description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>magic</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>bytes</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">64 bits</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>F0 9F 8C 90 F0 9F 93 A6</code> (hexadecimal)</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>version</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>bytes</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">32 bits</td>
+                <td class="text-left" rowspan="1" colspan="1">the version of the specification</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>section-lengths</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">array</td>
+                <td class="text-left" rowspan="1" colspan="1">variable</td>
+                <td class="text-left" rowspan="1" colspan="1">array of <span><a href="#type-section-length" class="xref"><em>section-length</em></a> (<a href="#type-section-length" class="xref">Appendix A.1.2</a>)</span>
+</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>sections</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">array</td>
+                <td class="text-left" rowspan="1" colspan="1">variable</td>
+                <td class="text-left" rowspan="1" colspan="1">see <span><a href="#core-sections" class="xref"><em>core sections</em></a> (<a href="#core-sections" class="xref">Appendix A.2</a>)</span>
+</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>length</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>bytes</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">64 bits</td>
+                <td class="text-left" rowspan="1" colspan="1">the length of the bundle in bytes</td>
+              </tr>
+            </tbody>
+          </table>
+<p id="appendix-A.1.1-2">CDDL spec:<a href="#appendix-A.1.1-2" class="pilcrow">¶</a></p>
+<div id="appendix-A.1.1-3">
+<pre class="sourcecode lang-cddl">
+webbundle = [
+  magic: h'F0 9F 8C 90 F0 9F 93 A6',
+  version: bytes .size 4,
+  section-lengths: bytes .cbor section-lengths,
+  sections: [* any ],
+  length: bytes .size 8, ; Big-endian number of bytes in the bundle.
+]
+</pre><a href="#appendix-A.1.1-3" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1.1-4">Note: the basic type <code>bytes</code> (alternatively named <code>bstr</code>), defined as Major type 2 in the <span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span> specification, represents a byte string.<a href="#appendix-A.1.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="type-section-length">
+<section id="appendix-A.1.2">
+          <h4 id="name-type-section-length">
+<a href="#appendix-A.1.2" class="section-number selfRef">A.1.2. </a><a href="#name-type-section-length" class="section-name selfRef">Type: <code>section-length</code></a>
+          </h4>
+<table class="center" id="table-3">
+            <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+              <tr>
+                <th class="text-left" rowspan="1" colspan="1">name</th>
+                <th class="text-left" rowspan="1" colspan="1">type</th>
+                <th class="text-left" rowspan="1" colspan="1">size</th>
+                <th class="text-left" rowspan="1" colspan="1">description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>section-name</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>tstr</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">variable</td>
+                <td class="text-left" rowspan="1" colspan="1">The name of the section</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>length</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">
+                  <code>uint</code>
+</td>
+                <td class="text-left" rowspan="1" colspan="1">variable</td>
+                <td class="text-left" rowspan="1" colspan="1">The length of the section in bytes</td>
+              </tr>
+            </tbody>
+          </table>
+<p id="appendix-A.1.2-2">CDDL spec:<a href="#appendix-A.1.2-2" class="pilcrow">¶</a></p>
+<div id="appendix-A.1.2-3">
+<pre class="sourcecode lang-cddl">
+section-lengths = [* (section-name: tstr, length: uint) ]
+</pre><a href="#appendix-A.1.2-3" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.1.2-4">Note: the basic type <code>tstr</code>, defined as Major type 3 in the <span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span> specification, represents a text string encoded as UTF-8.<a href="#appendix-A.1.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="core-sections">
+<section id="appendix-A.2">
+        <h3 id="name-core-sections">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-core-sections" class="section-name selfRef">Core sections</a>
+        </h3>
+<div id="the-index-section">
+<section id="appendix-A.2.1">
+          <h4 id="name-the-index-section-2">
+<a href="#appendix-A.2.1" class="section-number selfRef">A.2.1. </a><a href="#name-the-index-section-2" class="section-name selfRef">The <code>index</code> section</a>
+          </h4>
+<p id="appendix-A.2.1-1">The <code>index</code> section maps URLs (<span>[<a href="#URL" class="xref">URL</a>]</span>) to offset/length pairs in the <span><a href="#the-responses-section" class="xref"><code>responses</code></a> (<a href="#the-responses-section" class="xref">Appendix A.2.3</a>)</span> section.<a href="#appendix-A.2.1-1" class="pilcrow">¶</a></p>
+<div id="type-index">
+<section id="appendix-A.2.1.1">
+            <h5 id="name-type-index">
+<a href="#appendix-A.2.1.1" class="section-number selfRef">A.2.1.1. </a><a href="#name-type-index" class="section-name selfRef">Type: <code>index</code></a>
+            </h5>
+<table class="center" id="table-4">
+              <caption><a href="#table-4" class="selfRef">Table 4</a></caption>
+<thead>
+                <tr>
+                  <th class="text-left" rowspan="1" colspan="1">name</th>
+                  <th class="text-left" rowspan="1" colspan="1">type</th>
+                  <th class="text-left" rowspan="1" colspan="1">size</th>
+                  <th class="text-left" rowspan="1" colspan="1">description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>index</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">map (<span><a href="#type-whatwg-url" class="xref"><code>whatwg-url</code></a> (<a href="#type-whatwg-url" class="xref">Appendix A.2.1.2</a>)</span> =&gt; <span><a href="#type-location-in-responses" class="xref"><code>location-in-responses</code></a> (<a href="#type-location-in-responses" class="xref">Appendix A.2.1.3</a>)</span>)</td>
+                  <td class="text-left" rowspan="1" colspan="1">variable</td>
+                  <td class="text-left" rowspan="1" colspan="1">A map from a URL to a location</td>
+                </tr>
+              </tbody>
+            </table>
+</section>
+</div>
+<div id="type-whatwg-url">
+<section id="appendix-A.2.1.2">
+            <h5 id="name-type-whatwg-url">
+<a href="#appendix-A.2.1.2" class="section-number selfRef">A.2.1.2. </a><a href="#name-type-whatwg-url" class="section-name selfRef">Type: <code>whatwg-url</code></a>
+            </h5>
+<table class="center" id="table-5">
+              <caption><a href="#table-5" class="selfRef">Table 5</a></caption>
+<thead>
+                <tr>
+                  <th class="text-left" rowspan="1" colspan="1">name</th>
+                  <th class="text-left" rowspan="1" colspan="1">type</th>
+                  <th class="text-left" rowspan="1" colspan="1">size</th>
+                  <th class="text-left" rowspan="1" colspan="1">description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>whatwg-url</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>tstr</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">variable</td>
+                  <td class="text-left" rowspan="1" colspan="1">A URL stored as a text string</td>
+                </tr>
+              </tbody>
+            </table>
+</section>
+</div>
+<div id="type-location-in-responses">
+<section id="appendix-A.2.1.3">
+            <h5 id="name-type-location-in-responses">
+<a href="#appendix-A.2.1.3" class="section-number selfRef">A.2.1.3. </a><a href="#name-type-location-in-responses" class="section-name selfRef">Type: <code>location-in-responses</code></a>
+            </h5>
+<table class="center" id="table-6">
+              <caption><a href="#table-6" class="selfRef">Table 6</a></caption>
+<thead>
+                <tr>
+                  <th class="text-left" rowspan="1" colspan="1">name</th>
+                  <th class="text-left" rowspan="1" colspan="1">type</th>
+                  <th class="text-left" rowspan="1" colspan="1">size</th>
+                  <th class="text-left" rowspan="1" colspan="1">description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>offset</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>uint</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">variable</td>
+                  <td class="text-left" rowspan="1" colspan="1">An offset within the <span><a href="#the-responses-section" class="xref"><code>responses</code></a> (<a href="#the-responses-section" class="xref">Appendix A.2.3</a>)</span> section</td>
+                </tr>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>length</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>uint</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">variable</td>
+                  <td class="text-left" rowspan="1" colspan="1">The size of the response in bytes</td>
+                </tr>
+              </tbody>
+            </table>
+<p id="appendix-A.2.1.3-2">CDDL spec:<a href="#appendix-A.2.1.3-2" class="pilcrow">¶</a></p>
+<div id="appendix-A.2.1.3-3">
+<pre class="sourcecode lang-cddl">
+index = {* whatwg-url =&gt; [ location-in-responses ] }
+whatwg-url = tstr
+location-in-responses = (offset: uint, length: uint)
+</pre><a href="#appendix-A.2.1.3-3" class="pilcrow">¶</a>
+</div>
+<p id="appendix-A.2.1.3-4">Note: the basic type <code>uint</code>, defined as Major type 0 in the <span>[<a href="#CBORbis" class="xref">CBORbis</a>]</span> specification, represents an unsigned integer.<a href="#appendix-A.2.1.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="the-critical-section">
+<section id="appendix-A.2.2">
+          <h4 id="name-the-critical-section-2">
+<a href="#appendix-A.2.2" class="section-number selfRef">A.2.2. </a><a href="#name-the-critical-section-2" class="section-name selfRef">The <code>critical</code> section</a>
+          </h4>
+<p id="appendix-A.2.2-1">The <code>critical</code> section contains the names of additional sections of the bundle that the client needs to understand in order to load the bundle correctly. The rest of the sections are assumed to be optional. If the client has not implemented a section named by one of the items in this list, the client MUST fail to parse the bundle as a whole.<a href="#appendix-A.2.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.2-2">The <code>critical</code> section itself is optional.<a href="#appendix-A.2.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-A.2.2-3">CDDL spec:<a href="#appendix-A.2.2-3" class="pilcrow">¶</a></p>
+<div id="appendix-A.2.2-4">
+<pre class="sourcecode lang-cddl">
+critical = [*tstr]
+</pre><a href="#appendix-A.2.2-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="the-responses-section">
+<section id="appendix-A.2.3">
+          <h4 id="name-the-responses-section">
+<a href="#appendix-A.2.3" class="section-number selfRef">A.2.3. </a><a href="#name-the-responses-section" class="section-name selfRef">The <code>responses</code> section</a>
+          </h4>
+<p id="appendix-A.2.3-1">The <code>responses</code> section contains an array of HTTP responses (<span>[<a href="#HTTP" class="xref">HTTP</a>]</span>). Each response contains the response headers and the response body.<a href="#appendix-A.2.3-1" class="pilcrow">¶</a></p>
+<div id="type-response">
+<section id="appendix-A.2.3.1">
+            <h5 id="name-type-response">
+<a href="#appendix-A.2.3.1" class="section-number selfRef">A.2.3.1. </a><a href="#name-type-response" class="section-name selfRef">Type: <code>response</code></a>
+            </h5>
+<table class="center" id="table-7">
+              <caption><a href="#table-7" class="selfRef">Table 7</a></caption>
+<thead>
+                <tr>
+                  <th class="text-left" rowspan="1" colspan="1">name</th>
+                  <th class="text-left" rowspan="1" colspan="1">type</th>
+                  <th class="text-left" rowspan="1" colspan="1">size</th>
+                  <th class="text-left" rowspan="1" colspan="1">description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>headers</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">map (<code>bstr</code> =&gt; <code>bstr</code>)</td>
+                  <td class="text-left" rowspan="1" colspan="1">variable</td>
+                  <td class="text-left" rowspan="1" colspan="1">A map of field name to field value</td>
+                </tr>
+                <tr>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>payload</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">
+                    <code>bstr</code>
+</td>
+                  <td class="text-left" rowspan="1" colspan="1">variable</td>
+                  <td class="text-left" rowspan="1" colspan="1">The content of the HTTP response as a byte string</td>
+                </tr>
+              </tbody>
+            </table>
+<p id="appendix-A.2.3.1-2">CDDL spec:<a href="#appendix-A.2.3.1-2" class="pilcrow">¶</a></p>
+<div id="appendix-A.2.3.1-3">
+<pre class="sourcecode lang-cddl">
+responses = [*response]
+response = [headers: bstr .cbor headers, payload: bstr]
+headers = {* bstr =&gt; bstr}
+</pre><a href="#appendix-A.2.3.1-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="change-log">
+<section id="appendix-B">
+      <h2 id="name-change-log">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-change-log" class="section-name selfRef">Change Log</a>
+      </h2>
+<p id="appendix-B-1">This section is to be removed before publishing as an RFC.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">draft-02<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-3.1">Removed primary URL, manifest and content negotiation.<a href="#appendix-B-3.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-3.2">Added bundle format appendix.<a href="#appendix-B-3.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="appendix-B-4">draft-01<a href="#appendix-B-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-5.1">Turned the top-level primary URL into an optional section.<a href="#appendix-B-5.1" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="appendix-B-6">draft-00<a href="#appendix-B-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-7.1">No changes from draft-yasskin-wpack-bundled-exchanges-04.<a href="#appendix-B-7.1" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="appendix-B-8">draft-yasskin-wpack-bundled-exchanges-04<a href="#appendix-B-8" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-9.1">Rewrite to be more declarative and less algorithmic.<a href="#appendix-B-9.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-9.2">Make a bundle represent a set of HTTP Representations, with the
+Content-Location replacing what was the request URL, and the Variants
+information, as before, driving content negotiation.<a href="#appendix-B-9.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-9.3">Make the primary URL optional.<a href="#appendix-B-9.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-9.4">Remove the signatures section.<a href="#appendix-B-9.4" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-9.5">Update Variants examples for the latest Variants draft.<a href="#appendix-B-9.5" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-9.6">Removed the distinction between "metadata" and non-metadata sections.<a href="#appendix-B-9.6" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="appendix-B-10">draft-yasskin-wpack-bundled-exchanges-03<a href="#appendix-B-10" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-11.1">Make the manifest optional.<a href="#appendix-B-11.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-11.2">Update the reference to draft-yasskin-wpack-use-cases.<a href="#appendix-B-11.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-11.3">Retitle to "web bundles".<a href="#appendix-B-11.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="appendix-B-12">draft-yasskin-wpack-bundled-exchanges-02<a href="#appendix-B-12" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-13.1">Fix the initial bytes of the format.<a href="#appendix-B-13.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-13.2">Allow empty responses to omit their content type.<a href="#appendix-B-13.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-13.3">Provisionally register application/webbundle.<a href="#appendix-B-13.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="appendix-B-14">draft-yasskin-wpack-bundled-exchanges-01<a href="#appendix-B-14" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B-15.1">Include only section lengths in the section index, requiring sections to be
+listed in order.<a href="#appendix-B-15.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.2">Have the "index" section map URLs to sets of responses negotiated using the
+Variants system (<span>[<a href="#I-D.ietf-httpbis-variants" class="xref">I-D.ietf-httpbis-variants</a>]</span>).<a href="#appendix-B-15.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.3">Require the "manifest" to be embedded into the bundle.<a href="#appendix-B-15.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.4">Add a content sniffing security consideration.<a href="#appendix-B-15.4" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.5">Add a version string to the format and its mime type.<a href="#appendix-B-15.5" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.6">Add a fallback URL in a fixed location in the format, and use that fallback
+URL as the primary URL of the bundle.<a href="#appendix-B-15.6" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.7">Add a "signatures" section to let authorities (like domain-trusted X.509
+certificates) vouch for subsets of a bundle.<a href="#appendix-B-15.7" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="appendix-B-15.8">Use the CBORbis "deterministic encoding" requirements instead of
+"canonicalization" requirements.<a href="#appendix-B-15.8" class="pilcrow">¶</a>
+</li>
+      </ul>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="appendix-C">
+      <h2 id="name-acknowledgements">
+<a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-C-1">Thanks to the Chrome loading team, especially Kinuko Yasuda and Kouhei Ueno for
+making the format work well when streamed.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-D">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Jeffrey Yasskin</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:jyasskin@chromium.org" class="email">jyasskin@chromium.org</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

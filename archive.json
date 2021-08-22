@@ -1,0 +1,606 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2021-08-22T01:01:51.965410+00:00",
+  "repo": "wpack-wg/bundled-responses",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [
+    {
+      "number": 1,
+      "id": "MDU6SXNzdWU4NzY5NzIwNzg=",
+      "title": "Is \"responses\" the right goal?",
+      "url": "https://github.com/wpack-wg/bundled-responses/issues/1",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "First!\r\n\r\nThe original design here was framed as a response to some HTTP request.  But I realize that the design and thinking has moved on somewhat since then.  Treating this as a bundle of resources with metadata is both easier to reason about and less likely to trip into awkward problems (such as how this might interact with the HTTP protocol).",
+      "createdAt": "2021-05-06T00:45:04Z",
+      "updatedAt": "2021-07-02T14:51:35Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "body": "To digress about the history:\r\n 1. The original design in [draft-yasskin-dispatch-web-packaging](https://datatracker.ietf.org/doc/html/draft-yasskin-dispatch-web-packaging-00#section-2.3) was around capturing a set of request/response pairs, on the theory that requests were the way to capture content negotiation. That turned out to be wrong: HTTP/2 PUSH never documented a design for how the PUSH_PROMISE's requests would match against the UA's requests.\r\n 2. So I shifted to a second design in [draft-yasskin-wpack-bundled-exchanges-01](https://datatracker.ietf.org/doc/html/draft-yasskin-wpack-bundled-exchanges-01#section-2.2) of bundling (URL, content-negotiation, response) triples, with the content negotiation represented using the `Variants` response header. But responses can already hold their URL in the `Content-Location` response header, and `Variants` is already a response header, which led me to rethink what it was we're actually storing.\r\n 3. So in [draft-yasskin-wpack-bundled-exchanges-04](https://datatracker.ietf.org/doc/html/draft-yasskin-wpack-bundled-exchanges-04#section-2), I defined the things in a bundle as \"HTTP representations, themselves represented by HTTP response messages\". 3 of the response headers get split out into discontiguous locations in the format (`Content-Location` becomes the key of the index map, `Variants` heads each value in the index map, and `Variant-Key` is implied by the order of the offset pairs in the value), but they're still logically response headers.\r\n\r\nWhy [\"representations\"](https://www.ietf.org/archive/id/draft-ietf-httpbis-semantics-15.html#name-representations) and not [\"resources\"](https://www.ietf.org/archive/id/draft-ietf-httpbis-semantics-15.html#name-resources)? HTTP defines resources as a very abstract concept. They're the abstract idea named by a URI (e.g. \"the current weather in Laguna Beach\"), rather than any particular serialization into bytes. Since bundles hold byte sequences, they can't really hold resources, but they can hold representations.\r\n\r\nGiven all that ... what kind of change are you looking for here?",
+          "createdAt": "2021-05-07T00:06:14Z",
+          "updatedAt": "2021-05-07T00:06:14Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "That matches my recollection of the history also.\r\n\r\nIt's just the naming.\r\n\r\nSaying \"resources\" is OK provided that there is no risk of being confused by the HTTP concept.  A resource as exposed by HTTP is a rich and abstract thing that can do things, including produce representations.  Here, the resource is far less capable, but it is still potentially also a resource.  To that end, the distinction between a resource and its representation -- what motivates us to use the term \"representation\" at all -- is not important.\r\n\r\nIf we are no longer dependent on this being a representation of an HTTP resource, calling these representations implies the existence of some abstract resource that cannot be interacted with.  The resource/representation split only invokes Plato's cave in what is a truly futile fashion.\r\n\r\nThat is to say, without any pretension, that this is a bag of bags of bits, with the metadata that allows computers to make sense of those bits.",
+          "createdAt": "2021-05-07T00:25:14Z",
+          "updatedAt": "2021-05-07T00:25:14Z"
+        },
+        {
+          "author": "littledan",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson 's reasoning makes sense to me. Maybe we should go back to calling this a \"resource bundle\" then?",
+          "createdAt": "2021-07-02T14:51:34Z",
+          "updatedAt": "2021-07-02T14:51:34Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "MDU6SXNzdWU4NzgyMTc5MzY=",
+      "title": "Consider removing content negotiation",
+      "url": "https://github.com/wpack-wg/bundled-responses/issues/2",
+      "state": "OPEN",
+      "author": "jyasskin",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Moved from @littledan's https://github.com/WICG/webpackage/issues/612:\r\n\r\nIt's more efficient to use content negotiation to select which bundle to serve, rather than including several variants of a resource inside a bundle. Even most use cases around re-sharing bundles while offline can get away with including a single least-common-denominator resource. I only know of the case of **translations** that concretely need several variants of the same resource.\r\n\r\nCan we simplify the design by omitting content negotiation? We'd lose some fidelity in representing HTTP, but that might be acceptable.",
+      "createdAt": "2021-05-07T00:00:09Z",
+      "updatedAt": "2021-07-06T14:21:55Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I\"m fine to remove the *variants* support from the bundle format, however, I'm wondering how removing the *variants* support impacts on the chromium's implementation. We should align somehow.\r\n\r\n@horo-t @irori\r\nDo you know any use case of *variants*? Can we remove *variants* support from the bundle format without any impacts on the chromium?",
+          "createdAt": "2021-07-05T09:36:18Z",
+          "updatedAt": "2021-07-05T09:36:18Z"
+        },
+        {
+          "author": "irori",
+          "authorAssociation": "NONE",
+          "body": "Chromium supports _variants_ in Navigation to Web Bundles (https://crbug.com/1029406), but not in Subresource loading with Web Bundles.\r\n\r\nSince Navigation to Web Bundles hasn't shipped yet, I think it's fine to remove it from Chromium.",
+          "createdAt": "2021-07-06T00:49:26Z",
+          "updatedAt": "2021-07-06T00:49:26Z"
+        },
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If we remove the content negotiation, it may become difficult to support new data formats like WebP in future. But removing it from the bundle format now and re-thinking when it will be more important sounds acceptable.",
+          "createdAt": "2021-07-06T01:09:55Z",
+          "updatedAt": "2021-07-06T01:09:55Z"
+        },
+        {
+          "author": "littledan",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The idea here is that you would negotiate for the whole bundle, not for resources within the bundle. I think this could permit upgrade to new image formats over time, without shipping all the different options redundantly to the client.",
+          "createdAt": "2021-07-06T14:21:55Z",
+          "updatedAt": "2021-07-06T14:21:55Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "MDU6SXNzdWU5NDQyNDc4ODk=",
+      "title": "Create an extension document for \"browsing into a bundle\"",
+      "url": "https://github.com/wpack-wg/bundled-responses/issues/9",
+      "state": "OPEN",
+      "author": "felipeerias",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I would like to discuss the possibility that the WPACK group creates a second document: an extension of the base spec defining the additions needed to implement the \"browsing into a bundle\" functionality.\r\n\r\nThose additions may include things like the primary URL, manifest, and content negotiation. The existing \"critical\" section may be used to specify which of those are required in a particular context.\r\n\r\nThis would let us cover use cases like saving a website or distributing a web app, while keeping the base spec as simple as possible.",
+      "createdAt": "2021-07-14T09:49:47Z",
+      "updatedAt": "2021-07-20T03:43:30Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for filing an issue to discuss! I appreciate it.\r\n\r\nMy preference is having just a single document, at least for a while, unless there is a strong reason to have a separated document. I guess a single document for the bundle format makes things, such as our workflows to maintain the document, easier.\r\n\r\n> primary URL, manifest, and content negotiation\r\n\r\nGiven that we roughly agreed that we don't need a content negotiation, the candidates for a second document are only two things; 1) primary URL and 2) manifest.\r\n\r\nEither of them is not complicated, at least, at this point. So i'm afraid it is not worth having a second document for them.\r\n\r\nIf we have a more complicated optional section to describe in the future, we would consider to have a second document, however, I'm afraid it is too early to have a second document at this point, IMO.",
+          "createdAt": "2021-07-16T02:18:08Z",
+          "updatedAt": "2021-07-16T02:20:15Z"
+        },
+        {
+          "author": "littledan",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The main motivation for a separate document is that a broader group of people agree on the concept of bundling in general (e.g., for subresources) than agree on bundling to represent a whole document to navigate to. So, it should be easier to get broad support for a standard for the bundle format generally if it *excludes* features required for navigation. It is likely to take longer for the navigation features to be part of a standard, due to this disagreement (but Chrome can still prototype and even ship non-standard features, per its policies, for better or worse).",
+          "createdAt": "2021-07-19T10:09:23Z",
+          "updatedAt": "2021-07-19T10:11:13Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for explaining the main motivation! That makes sense to me.\r\nYes, an agreement is more important.\r\n\r\nI had thought that we should not prioritize a particular use case (\"subresource loading\" or \"navigate into a bundle\"), and the bundle format document should mention every *fields*, including optional ones, if they are used in one of use cases.\r\n\r\nHowever, that might not be always a good idea and is not the goal here.  I realized that what we should focus here is a *minimum* common subset, which are required in *every* use cases.\r\n\r\nThen, removing a manifest and a primary url make sense.\r\n\r\nGiven the bundle format allows an optional section, removing a manifest and a primary url should not be a blocker for Chromium to ship a feature which requires such an optional field. We can define an optional section somewhere (in this repository or other places).\r\n\r\n",
+          "createdAt": "2021-07-20T03:41:53Z",
+          "updatedAt": "2021-07-20T03:43:30Z"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "MDU6SXNzdWU5NTMzMzcwNDA=",
+      "title": "Should offset be renamed index?",
+      "url": "https://github.com/wpack-wg/bundled-responses/issues/10",
+      "state": "OPEN",
+      "author": "wbl",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Offset makes me think that it's a distance in bytes. Index would be a little clearer that it's an index into the responses array. That's what was intended, right? Because if not, there's a fun bunch of security issues around smuggling.",
+      "createdAt": "2021-07-26T22:26:58Z",
+      "updatedAt": "2021-07-27T15:24:01Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It's actually a byte offset into the responses region, in order to support [random access](https://wicg.github.io/webpackage/draft-yasskin-wpack-use-cases.html#name-random-access) when the bundles are stored on disk. An index would require a linear scan.\r\n\r\nThat means that anyone (a virus scanner?) trying to check the responses for safety needs to start from the index, rather than only parsing the response array as a single CBOR object. I was focusing on clients that check for safety while loading, but it definitely makes sense to add a security consideration for folks trying to separate security checks from the actual use of the data.\r\n\r\nWe could also re-specify the responses section as a byte array instead of an array of CBOR objects, if you think that'd help.",
+          "createdAt": "2021-07-26T22:40:31Z",
+          "updatedAt": "2021-07-26T22:40:31Z"
+        },
+        {
+          "author": "wbl",
+          "authorAssociation": "NONE",
+          "body": "There's no guarantee that the regions indicated are in order, disjoint, cover the contents etc? If everyone uses the index that's fine. I'll open a PR with some clarifying text and some warnings about common polyglots this enables. It probably can become a zip file for instance.",
+          "createdAt": "2021-07-27T01:12:45Z",
+          "updatedAt": "2021-07-27T01:12:45Z"
+        },
+        {
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Right. I initially had text saying that anything that parsed was valid, and just advised against overlapping and holey responses, but someone encouraged me to remove that, in favor of it being invalid but unlikely to cause a parsing error. I'd especially appreciate text about how those polyglots become security vulnerabilities.",
+          "createdAt": "2021-07-27T03:35:09Z",
+          "updatedAt": "2021-07-27T03:35:09Z"
+        },
+        {
+          "author": "wbl",
+          "authorAssociation": "NONE",
+          "body": "The usual way is signing: e.g. you thought you signed a webpack, but actually it's a zip with different contents, or a jpeg, etc.",
+          "createdAt": "2021-07-27T15:24:01Z",
+          "updatedAt": "2021-07-27T15:24:01Z"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "id": "MDU6SXNzdWU5NTg2MjIzMTI=",
+      "title": "A restriction for URL; URL can have a fragment or credentials parts?",
+      "url": "https://github.com/wpack-wg/bundled-responses/issues/11",
+      "state": "OPEN",
+      "author": "hayatoito",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "It seems we had a restriction that a URL can't have a fragment nor credentials parts,\r\nhowever, it seems these restriction were removed from the format at this commit. https://github.com/WICG/webpackage/commit/826cadfa986bdb403bca2e149016459172f98144\r\n\r\n> 1. For each (`url`, `responses`) entry in the `index` map:\r\n>    1. Let `parsedUrl` be the result of parsing ({{URL}}) `url` with\r\n>      no base URL.\r\n>   1. If `parsedUrl` is a failure, its fragment is not null, or it includes\r\n>      credentials, return an error.\r\n\r\nIt is a bit unclear whether this removal was intentionally done or not.\r\n\r\nIf this was intentionally done, that might be fine.\r\nWe don't have any restriction on the format itself. Instead, each use case can introduce such a restriction.\r\n\r\ne.g.\r\nSubresource loading will ignore a URL which has a fragment.\r\n\r\ncc: @jyasskin \r\n\r\nIt would be better to clarify our intention in this issue.\r\n",
+      "createdAt": "2021-08-03T01:04:48Z",
+      "updatedAt": "2021-08-04T00:48:58Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I didn't intend that change to make the subresource loading use case more lenient, but I think the WG could decide either way on whether the format itself forbids URLs with fragments or credentials.\r\n\r\nI suggest we say that index entries MUST NOT include fragments or credentials, but of course the use cases will have to explicitly specify what to do when bundles violate that requirement.",
+          "createdAt": "2021-08-03T20:21:31Z",
+          "updatedAt": "2021-08-03T20:21:31Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for clarification. I appreciate it!\r\n\r\n> suggest we say that index entries MUST NOT include fragments or credentials\r\n\r\nThat sounds reasonable to me, and matches the current chromium's bundle parser's implementation, and the behavior of CLI tools, I think, though I don't have a strong preference here.",
+          "createdAt": "2021-08-04T00:48:58Z",
+          "updatedAt": "2021-08-04T00:48:58Z"
+        }
+      ]
+    }
+  ],
+  "pulls": [
+    {
+      "number": 3,
+      "id": "MDExOlB1bGxSZXF1ZXN0Njc2NjkyMTI1",
+      "title": "Separating the primary URL into a section",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/3",
+      "state": "MERGED",
+      "author": "hayatoito",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes WICG/webpackage#616.\r\n\r\nThis is transferred from @littledan's WICG/webpackage#617.",
+      "createdAt": "2021-06-23T23:53:44Z",
+      "updatedAt": "2021-06-24T00:01:34Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "802739ee493d55926e7d2bb7350ff53cb9f7c168",
+      "headRepository": "hayatoito/bundled-responses",
+      "headRefName": "feature1",
+      "headRefOid": "6acbe174e0ae9d2e9601f864ce8e093d17650464",
+      "closedAt": "2021-06-24T00:01:33Z",
+      "mergedAt": "2021-06-24T00:01:33Z",
+      "mergedBy": "hayatoito",
+      "mergeCommit": {
+        "oid": "af91e1701ac9eb0c27d12fa4cd30c8ebcf1ddb50"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjkxMjMxNzgw",
+          "commit": {
+            "abbreviatedOid": "6acbe17"
+          },
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "The WG hummed in favor of this direction at IETF 110: https://datatracker.ietf.org/meeting/110/materials/minutes-110-wpack-00",
+          "createdAt": "2021-06-23T23:56:19Z",
+          "updatedAt": "2021-06-23T23:56:19Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "id": "MDExOlB1bGxSZXF1ZXN0Njc2NzAzNTk4",
+      "title": "Add the primary-url section to the initial IANA registration.",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/4",
+      "state": "MERGED",
+      "author": "jyasskin",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We forgot this in #3.\r\n\r\nPreview at https://wpack-wg.github.io/bundled-responses/add-primary-section-iana/draft-ietf-wpack-bundled-responses.html#name-web-bundle-section-name-reg",
+      "createdAt": "2021-06-24T00:30:27Z",
+      "updatedAt": "2021-06-24T00:33:12Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "f1422e9402bf66502b7b3a98fb24e2309174c1d0",
+      "headRepository": "wpack-wg/bundled-responses",
+      "headRefName": "add-primary-section-iana",
+      "headRefOid": "0987fc3c0d5196d97a8dec7b479ed6ccad06d19e",
+      "closedAt": "2021-06-24T00:33:12Z",
+      "mergedAt": "2021-06-24T00:33:12Z",
+      "mergedBy": "hayatoito",
+      "mergeCommit": {
+        "oid": "2012686401822ea1ca766560e673ca8c92c7e193"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjkxMjQ0MTg0",
+          "commit": {
+            "abbreviatedOid": "0987fc3"
+          },
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks!",
+          "createdAt": "2021-06-24T00:32:06Z",
+          "updatedAt": "2021-06-24T00:32:06Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjgzMzA3MTcw",
+      "title": "Remove the primary URL section",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/5",
+      "state": "MERGED",
+      "author": "felipeerias",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR removes the primary URL section.\r\n\r\nThe motivation is to factor the \"core\" Web Bundles specification to include just the minimal amount needed to support cases like subresource loading. This and other removed sections can be defined in other documents in the future.",
+      "createdAt": "2021-07-05T02:40:12Z",
+      "updatedAt": "2021-08-20T17:07:57Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "2012686401822ea1ca766560e673ca8c92c7e193",
+      "headRepository": "felipeerias/bundled-responses",
+      "headRefName": "remove_primary",
+      "headRefOid": "9d7a643cc49edda1ab0bca260fd4cf7f9fab5f67",
+      "closedAt": "2021-08-20T17:07:56Z",
+      "mergedAt": "2021-08-20T17:07:56Z",
+      "mergedBy": "felipeerias",
+      "mergeCommit": {
+        "oid": "0822e0d38a4f5d0c46708558820508b81b148113"
+      },
+      "comments": [
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The subresource loading doesn't need a primary URL, but I think \"Navigate to Bundle\" use case still needs it.\r\n\r\nhttps://web.dev/web-bundles/\r\n\r\n@horo-t @irori\r\nPlease correct me if I am wrong. I'm assuming \"Navigate to Bundle\" uses a primary URL as a main resource URL. ",
+          "createdAt": "2021-07-05T09:39:48Z",
+          "updatedAt": "2021-07-05T09:39:48Z"
+        },
+        {
+          "author": "irori",
+          "authorAssociation": "NONE",
+          "body": "> I'm assuming \"Navigate to Bundle\" uses a primary URL as a main resource URL.\r\n\r\nThat's correct. For a bundle to be navigable into, it needs to be possible to specify its main resource URL.",
+          "createdAt": "2021-07-06T00:58:55Z",
+          "updatedAt": "2021-07-06T00:58:55Z"
+        },
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yes, to open the web bundle file in the browser (eg: Drag and drop) we need either the primary URL or the manifest's [start_url](https://w3c.github.io/manifest/#dfn-start_url).\r\nSo, we need to keep either as an optional section.\r\n\r\n",
+          "createdAt": "2021-07-06T01:16:50Z",
+          "updatedAt": "2021-07-06T01:16:50Z"
+        },
+        {
+          "author": "littledan",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The idea of this PR is that a primary URL could be defined in a separate section. However, it is outside the scope of the \"core\" bundle specification to define this section.",
+          "createdAt": "2021-07-06T14:23:04Z",
+          "updatedAt": "2021-07-06T14:23:04Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for making a PR!\r\n\r\n> The motivation is to factor the \"core\" Web Bundles specification to include just the minimal amount needed to support cases like subresource loading. This and other removed sections can be defined in other documents in the `future.``\r\n\r\nCould we see a path to having other document more clearly?\r\n\r\nSince we need a primary URL defined somewhere, it might be difficult to remove a primary URL section without a clear path how a primary URL is defined.",
+          "createdAt": "2021-07-07T07:23:13Z",
+          "updatedAt": "2021-07-07T07:23:13Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(Just in case if someone missed it)\r\n\r\nIt seems this PR is one of agenda points at IETF 111 Wpack.\r\nhttps://mailarchive.ietf.org/arch/msg/wpack/_i_BS_LXz6uyYnVgmgBhxP1YJSw/\r\n\r\n",
+          "createdAt": "2021-07-09T02:19:29Z",
+          "updatedAt": "2021-07-09T02:19:29Z"
+        },
+        {
+          "author": "felipeerias",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@hayatoito : I just opened https://github.com/wpack-wg/bundled-responses/issues/9 to discuss the possibility of creating an extension of the spec as a separate document.",
+          "createdAt": "2021-07-14T09:52:35Z",
+          "updatedAt": "2021-07-14T09:52:35Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzIwNjkwODM1",
+          "commit": {
+            "abbreviatedOid": "9d7a643"
+          },
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM (just for record). Thanks for working on this.",
+          "createdAt": "2021-08-03T00:50:31Z",
+          "updatedAt": "2021-08-03T00:50:31Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjgzMzA3MTk2",
+      "title": "Remove the manifest section",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/6",
+      "state": "MERGED",
+      "author": "felipeerias",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR removes the manifest section.\r\n\r\nThe motivation is to factor the \"core\" Web Bundles specification to include just the minimal amount needed to support cases like subresource loading, which does not need a manifest. This and other removed sections can be defined in other documents in the future.\r\n\r\nAdapted from https://github.com/WICG/webpackage/pull/619",
+      "createdAt": "2021-07-05T02:40:18Z",
+      "updatedAt": "2021-08-20T17:56:47Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "0822e0d38a4f5d0c46708558820508b81b148113",
+      "headRepository": "felipeerias/bundled-responses",
+      "headRefName": "remove-primary-url",
+      "headRefOid": "070ffbfbce2ab626645bc69692264b9e7b85cf81",
+      "closedAt": "2021-08-20T17:56:47Z",
+      "mergedAt": "2021-08-20T17:56:47Z",
+      "mergedBy": "felipeerias",
+      "mergeCommit": {
+        "oid": "4d642a6f6c7a842a266a7dd266a82085fd66a8a5"
+      },
+      "comments": [
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We might want to make sure the impact of removing manifest section from the bundle format on the chromium.\r\n\r\n@horo-t @irori\r\nDoes Chrome have any usages of manifest section? It seems [Navigate to Bundle](https://web.dev/web-bundles/) doesn't use it, however, I am wondering whether there is existing use case for that, I am not aware of.",
+          "createdAt": "2021-07-05T09:47:01Z",
+          "updatedAt": "2021-07-05T09:47:01Z"
+        },
+        {
+          "author": "littledan",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I never really understood the motivation of this section, since the primary URL response can contain a header pointing to the manifest.",
+          "createdAt": "2021-07-06T14:24:17Z",
+          "updatedAt": "2021-07-06T14:24:17Z"
+        },
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Imagine the situation of application distribution, it is very useful to have a manifest section. For example, we can display the application icon without parsing the HTML of the primary URL.\r\nBut I agree that the manifest section can be outside the scope of the \"core\" bundle specification.\r\nSo removing it from the core spec looks good to me.",
+          "createdAt": "2021-07-07T00:59:16Z",
+          "updatedAt": "2021-07-07T00:59:16Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzIwNjkxMTAy",
+          "commit": {
+            "abbreviatedOid": "985893d"
+          },
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM (just for record). Thanks for working on this.",
+          "createdAt": "2021-08-03T00:51:18Z",
+          "updatedAt": "2021-08-03T00:51:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjgzMzA3MjI2",
+      "title": "Remove content negotiation",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/7",
+      "state": "MERGED",
+      "author": "felipeerias",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR removes content negotiation from the spec.\r\n\r\nIt is more efficient to use content negotiation on the server to select which bundle to send, rather than including several variants in the bundle and having that negotiation happen on the client's side.\r\n\r\nIssue: https://github.com/wpack-wg/bundled-responses/issues/2\r\n\r\nAdapted from https://github.com/WICG/webpackage/pull/618",
+      "createdAt": "2021-07-05T02:40:26Z",
+      "updatedAt": "2021-08-20T18:14:58Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "4d642a6f6c7a842a266a7dd266a82085fd66a8a5",
+      "headRepository": "felipeerias/bundled-responses",
+      "headRefName": "remove_content_negotiation",
+      "headRefOid": "b435788c3251ae8bccadc40d2c9ce2a41d9c75c8",
+      "closedAt": "2021-08-20T18:14:57Z",
+      "mergedAt": "2021-08-20T18:14:57Z",
+      "mergedBy": "felipeerias",
+      "mergeCommit": {
+        "oid": "3af7f53680378afce314f3422182139620db8fa2"
+      },
+      "comments": [
+        {
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Now that the working group has adopted the document, we actually need them to approve significant changes like this one, not me. We can check on this one during the IETF meeting [on Monday](https://datatracker.ietf.org/meeting/111/agenda/#2021-07-26-110000).",
+          "createdAt": "2021-07-20T00:17:35Z",
+          "updatedAt": "2021-07-20T00:17:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzAwNjUzMDMz",
+          "commit": {
+            "abbreviatedOid": "d15109f"
+          },
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Thanks for making a PR!\r\n\r\nPer the discussion https://github.com/wpack-wg/bundled-responses/issues/2, the chromium side is okay to remove content negotiation.\r\n\r\nWe probably have to change parser's behavior by checking a bundle's version. That should not be a significant issue for us. \r\n\r\nWe might want to wait for @jyasskin 's approval before merge.",
+          "createdAt": "2021-07-07T07:12:48Z",
+          "updatedAt": "2021-07-07T07:13:08Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjgzNTgyMTIy",
+      "title": "Add bundle format appendix",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/8",
+      "state": "MERGED",
+      "author": "felipeerias",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR adds an appendix with a concise description of the bundle format.",
+      "createdAt": "2021-07-05T10:35:33Z",
+      "updatedAt": "2021-08-20T08:36:51Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "2012686401822ea1ca766560e673ca8c92c7e193",
+      "headRepository": "felipeerias/bundled-responses",
+      "headRefName": "bundle-format",
+      "headRefOid": "f67357e0254ad6d07ce274e5586906ece7342ee3",
+      "closedAt": "2021-08-20T08:36:51Z",
+      "mergedAt": "2021-08-20T08:36:51Z",
+      "mergedBy": "littledan",
+      "mergeCommit": {
+        "oid": "db4ba7d6ab4611b3d78aae1667fca004a1347b7f"
+      },
+      "comments": [
+        {
+          "author": "felipeerias",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Following the feedback at the IETF meeting, I have moved the information from `bundle-format.md` into an appendix of the document.\r\n\r\n(I guess this change would need a new entry in the Changelog, under `draft-02`?)",
+          "createdAt": "2021-07-29T06:10:17Z",
+          "updatedAt": "2021-07-29T06:10:17Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3Njk5MDQzMDI2",
+          "commit": {
+            "abbreviatedOid": "a13b7ec"
+          },
+          "author": "littledan",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-07-05T10:39:04Z",
+          "updatedAt": "2021-07-05T10:39:04Z",
+          "comments": []
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzIwNjkxNzk4",
+          "commit": {
+            "abbreviatedOid": "f67357e"
+          },
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM (just for record). Thanks for working on this.",
+          "createdAt": "2021-08-03T00:53:25Z",
+          "updatedAt": "2021-08-03T00:53:25Z",
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
