@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-08-22T01:01:51.965410+00:00",
+  "timestamp": "2021-08-26T00:59:59.606331+00:00",
   "repo": "wpack-wg/bundled-responses",
   "labels": [
     {
@@ -140,12 +140,12 @@
       "url": "https://github.com/wpack-wg/bundled-responses/issues/9",
       "state": "OPEN",
       "author": "felipeerias",
-      "authorAssociation": "NONE",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "I would like to discuss the possibility that the WPACK group creates a second document: an extension of the base spec defining the additions needed to implement the \"browsing into a bundle\" functionality.\r\n\r\nThose additions may include things like the primary URL, manifest, and content negotiation. The existing \"critical\" section may be used to specify which of those are required in a particular context.\r\n\r\nThis would let us cover use cases like saving a website or distributing a web app, while keeping the base spec as simple as possible.",
       "createdAt": "2021-07-14T09:49:47Z",
-      "updatedAt": "2021-07-20T03:43:30Z",
+      "updatedAt": "2021-08-25T00:26:58Z",
       "closedAt": null,
       "comments": [
         {
@@ -168,6 +168,20 @@
           "body": "Thanks for explaining the main motivation! That makes sense to me.\r\nYes, an agreement is more important.\r\n\r\nI had thought that we should not prioritize a particular use case (\"subresource loading\" or \"navigate into a bundle\"), and the bundle format document should mention every *fields*, including optional ones, if they are used in one of use cases.\r\n\r\nHowever, that might not be always a good idea and is not the goal here.  I realized that what we should focus here is a *minimum* common subset, which are required in *every* use cases.\r\n\r\nThen, removing a manifest and a primary url make sense.\r\n\r\nGiven the bundle format allows an optional section, removing a manifest and a primary url should not be a blocker for Chromium to ship a feature which requires such an optional field. We can define an optional section somewhere (in this repository or other places).\r\n\r\n",
           "createdAt": "2021-07-20T03:41:53Z",
           "updatedAt": "2021-07-20T03:43:30Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "FYI. The chrome is now trying to define an **optional** primary URL section and update our webbundle parser.\r\nThe WIP CL is https://chromium-review.googlesource.com/c/chromium/src/+/3068715\r\n\r\nWe probably want to have an extension document in this repository to define how an optional primary URL section should be defined. I think a concise markdown file is enough for our purpose, for a while.\r\n\r\nWe'll update this thread later. Thanks!",
+          "createdAt": "2021-08-24T02:42:25Z",
+          "updatedAt": "2021-08-24T02:42:25Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Ops. We just learned that extension docs should not be in this repository since they haven't been adopted by the WG.\r\nLet's use https://github.com/WICG/webpackage for extension documents.\r\n",
+          "createdAt": "2021-08-25T00:26:58Z",
+          "updatedAt": "2021-08-25T00:26:58Z"
         }
       ]
     },
@@ -598,6 +612,98 @@
           "body": "LGTM (just for record). Thanks for working on this.",
           "createdAt": "2021-08-03T00:53:25Z",
           "updatedAt": "2021-08-03T00:53:25Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "MDExOlB1bGxSZXF1ZXN0NzE4NTU2Mjk5",
+      "title": "Add a document for optional 'primary' section",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/12",
+      "state": "MERGED",
+      "author": "myrzakereyms",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As the optional 'primary' section was removed from the IETF draft, we're adding this separate document to explain the functionality, as this section will be implemented soon.\r\nCloses #9 ",
+      "createdAt": "2021-08-24T09:04:47Z",
+      "updatedAt": "2021-08-24T09:39:04Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "3af7f53680378afce314f3422182139620db8fa2",
+      "headRepository": "myrzakereyms/bundled-responses",
+      "headRefName": "primary_document",
+      "headRefOid": "d913fcc1a772187e7c58f2ba8ccbf5d6d288be14",
+      "closedAt": "2021-08-24T09:39:04Z",
+      "mergedAt": "2021-08-24T09:39:04Z",
+      "mergedBy": "hayatoito",
+      "mergeCommit": {
+        "oid": "5bb85e40a36e0ea31ecb3d16ddc578b5be54a1c6"
+      },
+      "comments": [
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The change itself looks good.\r\n\r\nNits:\r\n- Could you squash your git commits into one commit?  You would probably want to clean up the commit message.\r\n- You might want to mention issue #9 in the commit message. \r\n  https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue\r\n  Then, issue #9 got a notification that PR is sent.",
+          "createdAt": "2021-08-24T09:12:23Z",
+          "updatedAt": "2021-08-24T09:12:23Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzM3MDE1MTAw",
+          "commit": {
+            "abbreviatedOid": "d913fcc"
+          },
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-08-24T09:36:19Z",
+          "updatedAt": "2021-08-24T09:36:19Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "id": "MDExOlB1bGxSZXF1ZXN0NzE5Mjg1ODY2",
+      "title": "Revert \"Add a document for the optional 'primary' section of the WebB\u2026",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/13",
+      "state": "MERGED",
+      "author": "hayatoito",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "\u2026undle, as (#12)\"\r\n\r\nThis reverts commit 5bb85e40a36e0ea31ecb3d16ddc578b5be54a1c6.\r\n\r\nThe reason: An extension document should not be in the wpack-wg\r\nrepository. Instead, let's use WICG/webpackages repository.",
+      "createdAt": "2021-08-25T06:06:03Z",
+      "updatedAt": "2021-08-25T06:14:07Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "5bb85e40a36e0ea31ecb3d16ddc578b5be54a1c6",
+      "headRepository": "hayatoito/bundled-responses",
+      "headRefName": "revert",
+      "headRefOid": "b633584c2ebeb00ebd1bf9ff1c8638a404b6dff2",
+      "closedAt": "2021-08-25T06:14:07Z",
+      "mergedAt": "2021-08-25T06:14:07Z",
+      "mergedBy": "hayatoito",
+      "mergeCommit": {
+        "oid": "6368d0234f68f8910193265b8e99271de67cc621"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzM3OTM0MTUw",
+          "commit": {
+            "abbreviatedOid": "b633584"
+          },
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-08-25T06:10:53Z",
+          "updatedAt": "2021-08-25T06:10:53Z",
           "comments": []
         }
       ]
