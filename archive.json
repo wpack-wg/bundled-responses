@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-08-26T00:59:59.606331+00:00",
+  "timestamp": "2021-09-12T01:07:29.796985+00:00",
   "repo": "wpack-wg/bundled-responses",
   "labels": [
     {
@@ -258,6 +258,39 @@
           "body": "Thanks for clarification. I appreciate it!\r\n\r\n> suggest we say that index entries MUST NOT include fragments or credentials\r\n\r\nThat sounds reasonable to me, and matches the current chromium's bundle parser's implementation, and the behavior of CLI tools, I think, though I don't have a strong preference here.",
           "createdAt": "2021-08-04T00:48:58Z",
           "updatedAt": "2021-08-04T00:48:58Z"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "id": "MDU6SXNzdWU5OTE5OTc2MjE=",
+      "title": "Needs Clarification: A relative URL is supposed to work in index section?",
+      "url": "https://github.com/wpack-wg/bundled-responses/issues/14",
+      "state": "OPEN",
+      "author": "hayatoito",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "jyasskin"
+      ],
+      "labels": [],
+      "body": "The context is https://github.com/WICG/webpackage/issues/647\r\n\r\nThe current format says:\r\n\r\nhttps://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html#section-2.2-1\r\n\r\n>  Representations within a bundle are named by their Content-Location (Section 8.7 of [I-D.ietf-httpbis-semantics]), which holds a URL. This is also known as the representation's URL.\r\n\r\nhttps://datatracker.ietf.org/doc/html/draft-ietf-httpbis-semantics-18#section-8.7\r\n>     Content-Location = absolute-URI / partial-URI\r\n \r\nGiven that, it seems the format already allows a *relative URL* in the index section, however, it'd be better to ask a clarification than guessing its intention.\r\n\r\nUsing a relative URL is supposed to work? If so, we don't need to request a bundle format change to resolve https://github.com/WICG/webpackage/issues/647.",
+      "createdAt": "2021-09-09T09:23:47Z",
+      "updatedAt": "2021-09-09T14:03:30Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "More context: https://chromium-review.googlesource.com/c/chromium/src/+/3150318/3#message-58a152c5f290f8513abd3615ad24a4567626e3ba\r\n\r\nThis CL is intended to support relative URLs in web bundles for Subrerouce Web Bundle feature.",
+          "createdAt": "2021-09-09T09:31:57Z",
+          "updatedAt": "2021-09-09T09:31:57Z"
+        },
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@jyasskin What do you think about this?\r\nI think the `Naming a representation` section was introduced by this change in WICG/webpackage.\r\nhttps://github.com/WICG/webpackage/commit/826cadfa986bdb403bca2e149016459172f98144\r\n",
+          "createdAt": "2021-09-09T14:03:30Z",
+          "updatedAt": "2021-09-09T14:03:30Z"
         }
       ]
     }
