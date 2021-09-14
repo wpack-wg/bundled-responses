@@ -85,8 +85,9 @@ Bundle parsers support two primary operations:
 ## Naming a representation {#semantics-naming}
 
 Representations within a bundle are named by their `Content-Location` (Section
-8.7 of {{!I-D.ietf-httpbis-semantics}}), which holds a URL. This is also known
-as the representation's URL.
+8.7 of {{!I-D.ietf-httpbis-semantics}}). This is also known as the
+representation's URL. It is either an absolute-URI or a partial-URI. In the
+latter case, the referenced URL is relative to the bundle's URL. 
 
 This identifying information for each representation is stored in an index
 ({{index-section}}) rather than in that representation's HTTP response message.
