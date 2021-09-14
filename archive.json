@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-09-12T01:07:29.796985+00:00",
+  "timestamp": "2021-09-14T01:08:36.791347+00:00",
   "repo": "wpack-wg/bundled-responses",
   "labels": [
     {
@@ -275,7 +275,7 @@
       "labels": [],
       "body": "The context is https://github.com/WICG/webpackage/issues/647\r\n\r\nThe current format says:\r\n\r\nhttps://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html#section-2.2-1\r\n\r\n>  Representations within a bundle are named by their Content-Location (Section 8.7 of [I-D.ietf-httpbis-semantics]), which holds a URL. This is also known as the representation's URL.\r\n\r\nhttps://datatracker.ietf.org/doc/html/draft-ietf-httpbis-semantics-18#section-8.7\r\n>     Content-Location = absolute-URI / partial-URI\r\n \r\nGiven that, it seems the format already allows a *relative URL* in the index section, however, it'd be better to ask a clarification than guessing its intention.\r\n\r\nUsing a relative URL is supposed to work? If so, we don't need to request a bundle format change to resolve https://github.com/WICG/webpackage/issues/647.",
       "createdAt": "2021-09-09T09:23:47Z",
-      "updatedAt": "2021-09-09T14:03:30Z",
+      "updatedAt": "2021-09-14T00:35:11Z",
       "closedAt": null,
       "comments": [
         {
@@ -291,6 +291,27 @@
           "body": "@jyasskin What do you think about this?\r\nI think the `Naming a representation` section was introduced by this change in WICG/webpackage.\r\nhttps://github.com/WICG/webpackage/commit/826cadfa986bdb403bca2e149016459172f98144\r\n",
           "createdAt": "2021-09-09T14:03:30Z",
           "updatedAt": "2021-09-09T14:03:30Z"
+        },
+        {
+          "author": "hayatoito",
+          "authorAssociation": "COLLABORATOR",
+          "body": "cc: @felipeerias @littledan ",
+          "createdAt": "2021-09-13T03:38:55Z",
+          "updatedAt": "2021-09-13T03:38:55Z"
+        },
+        {
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We need to specify how the keys in the index section are parsed, independent of their semantics as `Content-Location`s. I'd intended that to eventually move to the [browser-side loading spec](https://wicg.github.io/webpackage/loading.html) when I removed the algorithms in #604, with the format spec here being less precise, but I think it was a mistake that I didn't even specify between absolute and relative URLs in the index. We should probably add a sentence here to say which it is. Since we have a use case for relative URLs, let's pick that one.\r\n\r\nThis spec should say something about what the URLs are relative to. Probably a bundle-defined base URL, which defaults to the location of the bundle but can be overridden by a section's contents? And that it's an error if two sections independently set the base URL without their own definitions disambiguating?",
+          "createdAt": "2021-09-14T00:07:14Z",
+          "updatedAt": "2021-09-14T00:07:14Z"
+        },
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I agree that the spec should clearly say that it supports relative URL.\r\nCreated [a PR](https://github.com/wpack-wg/bundled-responses/pull/15). Could you please reivew?\r\n\r\nI think when we introduce a new `base` section, the `base` section should be able to override the bundle's URL. But I don't know how useful it is yet.",
+          "createdAt": "2021-09-14T00:35:11Z",
+          "updatedAt": "2021-09-14T00:35:11Z"
         }
       ]
     }
@@ -740,6 +761,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 15,
+      "id": "PR_kwDOFX7-hs4rtAhY",
+      "title": "Support partial-URI (relative URL) in Web Bundle format",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/15",
+      "state": "OPEN",
+      "author": "horo-t",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes https://github.com/wpack-wg/bundled-responses/issues/14",
+      "createdAt": "2021-09-14T00:32:46Z",
+      "updatedAt": "2021-09-14T00:32:46Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "6368d0234f68f8910193265b8e99271de67cc621",
+      "headRepository": "horo-t/bundled-responses",
+      "headRefName": "relative_url",
+      "headRefOid": "42e10f56b7e546d005dc7aa4bc8050117ba74910",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
