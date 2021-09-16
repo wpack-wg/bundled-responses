@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-09-14T01:08:36.791347+00:00",
+  "timestamp": "2021-09-16T01:09:29.336276+00:00",
   "repo": "wpack-wg/bundled-responses",
   "labels": [
     {
@@ -774,19 +774,93 @@
       "labels": [],
       "body": "Closes https://github.com/wpack-wg/bundled-responses/issues/14",
       "createdAt": "2021-09-14T00:32:46Z",
-      "updatedAt": "2021-09-14T00:32:46Z",
+      "updatedAt": "2021-09-15T01:07:41Z",
       "baseRepository": "wpack-wg/bundled-responses",
       "baseRefName": "main",
       "baseRefOid": "6368d0234f68f8910193265b8e99271de67cc621",
       "headRepository": "horo-t/bundled-responses",
       "headRefName": "relative_url",
-      "headRefOid": "42e10f56b7e546d005dc7aa4bc8050117ba74910",
+      "headRefOid": "b750eb182f5af5b24b2e6a9d53194eb9173466ec",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks. Sent https://mailarchive.ietf.org/arch/msg/wpack/myHwuSoKVdqRxHC6YKCSvPvfpTs/",
+          "createdAt": "2021-09-15T01:07:41Z",
+          "updatedAt": "2021-09-15T01:07:41Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFX7-hs4s84wB",
+          "commit": {
+            "abbreviatedOid": "42e10f5"
+          },
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2021-09-14T16:10:54Z",
+          "updatedAt": "2021-09-14T18:38:25Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "```suggestion\r\nlatter case, the referenced URL is relative to the bundle's URL unless a section in the bundle specifies a different base URL.\r\n```\r\n\r\nTo allow a separate spec to override this. e.g. the [primary-url section](https://github.com/WICG/webpackage/blob/main/extensions/primary-section.md) should do so.",
+              "createdAt": "2021-09-14T16:10:54Z",
+              "updatedAt": "2021-09-14T18:38:25Z"
+            },
+            {
+              "originalPosition": 7,
+              "body": "I'm not certain whether to cite `absolute-URI or a partial-URI ({{Section 2.7 of RFC7230}})` or `valid url string without a fragment ({{URL}})` here, but do include the link to the specification that defines the term.",
+              "createdAt": "2021-09-14T18:38:16Z",
+              "updatedAt": "2021-09-14T18:38:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7-hs4s-Y15",
+          "commit": {
+            "abbreviatedOid": "42e10f5"
+          },
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thank you very much for reviewing.\r\n",
+          "createdAt": "2021-09-15T00:02:58Z",
+          "updatedAt": "2021-09-15T00:09:37Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Done",
+              "createdAt": "2021-09-15T00:02:58Z",
+              "updatedAt": "2021-09-15T00:09:37Z"
+            },
+            {
+              "originalPosition": 8,
+              "body": "Sounds good.\r\nDone",
+              "createdAt": "2021-09-15T00:08:21Z",
+              "updatedAt": "2021-09-15T00:09:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7-hs4s-aB8",
+          "commit": {
+            "abbreviatedOid": "b750eb1"
+          },
+          "author": "jyasskin",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Looks good, but please do run this by wpack@ietf.org before merging.",
+          "createdAt": "2021-09-15T00:15:14Z",
+          "updatedAt": "2021-09-15T00:15:14Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
