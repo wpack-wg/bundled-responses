@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-09-16T01:09:29.336276+00:00",
+  "timestamp": "2021-09-19T01:06:56.181641+00:00",
   "repo": "wpack-wg/bundled-responses",
   "labels": [
     {
@@ -275,7 +275,7 @@
       "labels": [],
       "body": "The context is https://github.com/WICG/webpackage/issues/647\r\n\r\nThe current format says:\r\n\r\nhttps://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html#section-2.2-1\r\n\r\n>  Representations within a bundle are named by their Content-Location (Section 8.7 of [I-D.ietf-httpbis-semantics]), which holds a URL. This is also known as the representation's URL.\r\n\r\nhttps://datatracker.ietf.org/doc/html/draft-ietf-httpbis-semantics-18#section-8.7\r\n>     Content-Location = absolute-URI / partial-URI\r\n \r\nGiven that, it seems the format already allows a *relative URL* in the index section, however, it'd be better to ask a clarification than guessing its intention.\r\n\r\nUsing a relative URL is supposed to work? If so, we don't need to request a bundle format change to resolve https://github.com/WICG/webpackage/issues/647.",
       "createdAt": "2021-09-09T09:23:47Z",
-      "updatedAt": "2021-09-14T00:35:11Z",
+      "updatedAt": "2021-09-16T02:05:41Z",
       "closedAt": null,
       "comments": [
         {
@@ -312,6 +312,13 @@
           "body": "I agree that the spec should clearly say that it supports relative URL.\r\nCreated [a PR](https://github.com/wpack-wg/bundled-responses/pull/15). Could you please reivew?\r\n\r\nI think when we introduce a new `base` section, the `base` section should be able to override the bundle's URL. But I don't know how useful it is yet.",
           "createdAt": "2021-09-14T00:35:11Z",
           "updatedAt": "2021-09-14T00:35:11Z"
+        },
+        {
+          "author": "felipeerias",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is a good idea, thank you (and apologies for the delay in providing feedback). I have added a small suggestion [in the PR](https://github.com/wpack-wg/bundled-responses/pull/15#pullrequestreview-755762923).",
+          "createdAt": "2021-09-16T02:05:41Z",
+          "updatedAt": "2021-09-16T02:05:41Z"
         }
       ]
     }
@@ -774,13 +781,13 @@
       "labels": [],
       "body": "Closes https://github.com/wpack-wg/bundled-responses/issues/14",
       "createdAt": "2021-09-14T00:32:46Z",
-      "updatedAt": "2021-09-15T01:07:41Z",
+      "updatedAt": "2021-09-16T03:25:26Z",
       "baseRepository": "wpack-wg/bundled-responses",
       "baseRefName": "main",
       "baseRefOid": "6368d0234f68f8910193265b8e99271de67cc621",
       "headRepository": "horo-t/bundled-responses",
       "headRefName": "relative_url",
-      "headRefOid": "b750eb182f5af5b24b2e6a9d53194eb9173466ec",
+      "headRefOid": "fdf9641ef5fcbace6ecd1e4707b680a90a707406",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -859,6 +866,46 @@
           "createdAt": "2021-09-15T00:15:14Z",
           "updatedAt": "2021-09-15T00:15:14Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOFX7-hs4tDAbr",
+          "commit": {
+            "abbreviatedOid": "b750eb1"
+          },
+          "author": "felipeerias",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thank you, this change looks good to me. I have a small suggestion below.",
+          "createdAt": "2021-09-16T02:03:53Z",
+          "updatedAt": "2021-09-16T02:05:04Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "This line would be clearer if it specified that it is not talking about any of the default sections defined in the spec, but about an additional one defined by an extension.\r\n\r\nI am not sure about the best way to express this idea, so take this as a suggestion:\r\n\r\n```suggestion\r\nbundle's URL unless an additional section in the bundle specifies a different\r\nbase URL.\r\n```",
+              "createdAt": "2021-09-16T02:03:53Z",
+              "updatedAt": "2021-09-16T02:05:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOFX7-hs4tDH0d",
+          "commit": {
+            "abbreviatedOid": "b750eb1"
+          },
+          "author": "horo-t",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Thanks!",
+          "createdAt": "2021-09-16T03:25:04Z",
+          "updatedAt": "2021-09-16T03:25:26Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "Done.",
+              "createdAt": "2021-09-16T03:25:04Z",
+              "updatedAt": "2021-09-16T03:25:26Z"
+            }
+          ]
         }
       ]
     }
