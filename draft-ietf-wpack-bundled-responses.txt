@@ -4,8 +4,8 @@
 
 Network Working Group                                         J. Yasskin
 Internet-Draft                                                    Google
-Intended status: Standards Track                          25 August 2021
-Expires: 26 February 2022
+Intended status: Standards Track                       22 September 2021
+Expires: 26 March 2022
 
 
                               Web Bundles
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 February 2022.
+   This Internet-Draft will expire on 26 March 2022.
 
 Copyright Notice
 
@@ -142,8 +142,11 @@ Table of Contents
 2.2.  Naming a representation
 
    Representations within a bundle are named by their "Content-Location"
-   (Section 8.7 of [I-D.ietf-httpbis-semantics]), which holds a URL.
-   This is also known as the representation's URL.
+   (Section 8.7 of [I-D.ietf-httpbis-semantics]).  This is also known as
+   the representation's URL.  It is either an absolute-URI or a partial-
+   URI (Section 2.7 of [RFC7230]).  In the latter case, the referenced
+   URL is relative to the bundle's URL unless an additional section in
+   the bundle specifies a different base URL.
 
    This identifying information for each representation is stored in an
    index (Section 4.2.1) rather than in that representation's HTTP
@@ -547,7 +550,7 @@ Table of Contents
               June 2019,
               <https://datatracker.ietf.org/doc/html/rfc8610>.
 
-   [FETCH]    WHATWG, "Fetch", August 2021,
+   [FETCH]    WHATWG, "Fetch", September 2021,
               <https://fetch.spec.whatwg.org/>.
 
    [HTTP]     Fielding, R., Gettys, J., Mogul, J., Frystyk, H.,
@@ -559,15 +562,15 @@ Table of Contents
    [I-D.ietf-httpbis-semantics]
               Fielding, R. T., Nottingham, M., and J. Reschke, "HTTP
               Semantics", Work in Progress, Internet-Draft, draft-ietf-
-              httpbis-semantics-18, 18 August 2021,
+              httpbis-semantics-19, 12 September 2021,
               <https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-
-              semantics-18>.
+              semantics-19>.
 
    [IANA.media-types]
               IANA, "Media Types",
               <http://www.iana.org/assignments/media-types>.
 
-   [INFRA]    WHATWG, "Infra", August 2021,
+   [INFRA]    WHATWG, "Infra", September 2021,
               <https://infra.spec.whatwg.org/>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -580,6 +583,11 @@ Table of Contents
               DOI 10.17487/RFC5234, January 2008,
               <https://datatracker.ietf.org/doc/html/rfc5234>.
 
+   [RFC7230]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Message Syntax and Routing",
+              RFC 7230, DOI 10.17487/RFC7230, June 2014,
+              <https://datatracker.ietf.org/doc/html/rfc7230>.
+
    [RFC7540]  Belshe, M., Peon, R., and M. Thomson, Ed., "Hypertext
               Transfer Protocol Version 2 (HTTP/2)", RFC 7540,
               DOI 10.17487/RFC7540, May 2015,
@@ -589,7 +597,7 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://datatracker.ietf.org/doc/html/rfc8174>.
 
-   [URL]      WHATWG, "URL", August 2021,
+   [URL]      WHATWG, "URL", September 2021,
               <https://url.spec.whatwg.org/>.
 
 7.2.  Informative References
