@@ -135,8 +135,6 @@ webbundle = [
   sections: [* any ],
   length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
 ]
-
-whatwg-url = tstr
 ~~~~~
 
 When serialized, the bundle MUST satisfy the core deterministic encoding
@@ -236,6 +234,7 @@ sections are optional.
 
 ~~~ cddl
 index = {* whatwg-url => [ location-in-responses ] }
+whatwg-url = tstr
 location-in-responses = (offset: uint, length: uint)
 ~~~
 
