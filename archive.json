@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-09-23T01:10:35.692559+00:00",
+  "timestamp": "2021-09-28T01:06:58.550922+00:00",
   "repo": "wpack-wg/bundled-responses",
   "labels": [
     {
@@ -910,6 +910,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDOFX7-hs4sScjl",
+      "title": "Editorial: Move whatwg-url definition to index section",
+      "url": "https://github.com/wpack-wg/bundled-responses/pull/16",
+      "state": "OPEN",
+      "author": "horo-t",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "https://github.com/wpack-wg/bundled-responses/commit/af91e1701ac9eb0c27d12fa4cd30c8ebcf1ddb50 have removed `primary-url: whatwg-url` from the top-level structure. So we don't need to have the definition of `whatwg-url` in the top-level structure. We should have it in the index section.",
+      "createdAt": "2021-09-27T02:28:01Z",
+      "updatedAt": "2021-09-27T02:28:01Z",
+      "baseRepository": "wpack-wg/bundled-responses",
+      "baseRefName": "main",
+      "baseRefOid": "24040f81e2e0b4f0cbb84dd246fc6ecc890dc1f4",
+      "headRepository": "horo-t/bundled-responses",
+      "headRefName": "move_whatwg-url",
+      "headRefOid": "a16fc3cd505447f305dbd250b5b4ec8151f035bd",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
