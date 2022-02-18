@@ -16,11 +16,14 @@ author:
     name: Jeffrey Yasskin
     organization: Google
     email: jyasskin@chromium.org
+ -
+    name: Felipe Erias
+    organization: Igalia
+    email: felipeerias@igalia.com
 
 normative:
   CBORbis: RFC8949
   CDDL: RFC8610
-  HTTP: RFC2616
   FETCH:
     target: https://fetch.spec.whatwg.org/
     title: Fetch
@@ -479,7 +482,7 @@ Even though this format starts out with just three core sections, its architectu
 
 
 CDDL spec:
-  
+
 ~~~~~ cddl
 webbundle = [
   magic: h'F0 9F 8C 90 F0 9F 93 A6',
@@ -501,7 +504,7 @@ Note: the basic type `bytes` (alternatively named `bstr`), defined as Major type
 
 
 CDDL spec:
-  
+
 ~~~~~ cddl
 section-lengths = [* (section-name: tstr, length: uint) ]
 ~~~~~
@@ -561,7 +564,8 @@ critical = [*tstr]
 
 ### The `responses` section
 
-The `responses` section contains an array of HTTP responses ({{HTTP}}). Each response contains the response headers and the response body.
+The `responses` section contains an array of HTTP response
+messages (Section 3.4 of {{!I-D.ietf-httpbis-semantics}}). Each response contains the response headers and the response body.
 
 #### Type: `response`
 
@@ -586,6 +590,7 @@ draft-02
 
 * Removed primary URL, manifest and content negotiation.
 * Added bundle format appendix.
+* Added Felipe as a co-editor.
 
 draft-01
 
